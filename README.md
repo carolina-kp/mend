@@ -6,6 +6,8 @@ You photograph a garment you no longer wear, say what it's made of and which too
 
 It is a prototype for testing assumptions with real users, not a production product.
 
+**Live:** https://mend-gilt.vercel.app
+
 - **On a phone:** the app, full screen.
 - **On a laptop:** a presentation page with the live app in a phone frame, a screen navigator and the component kit, for pitching.
 
