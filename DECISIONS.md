@@ -26,3 +26,14 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - **Rule check is keyword based.** It flags tools the person does not own, machine sewing without a machine, hot ironing or iron-on patches on heat-sensitive fibres, felting non-wool, cutting without scissors, sewing without needle or machine, difficulty above the skill cap and beginner-unfriendly techniques (zips, set-in sleeves, pattern drafting, buttonholes). Negations such as "no machine needed" are stripped before checking.
 - **When Gemini breaks a rule**, we retry once with the violations listed. If the second answer still breaks rules, the valid ideas are kept and the rest are filled from the fallback bank, so the person always gets three safe ideas.
 - No em dashes in UI copy, docs or comments; existing ones are replaced as files are touched.
+
+## Step 2: /api/ideas
+
+- New route `/api/ideas`. `/api/suggest` now only reads care labels.
+- Pipeline in `lib/ideas.ts`: constraints, prompt (`lib/prompt.ts`), Gemini with `responseJsonSchema` generated from the Zod schema, temperature 0.5, 8 second timeout (`GEMINI_TIMEOUT_MS` to change it).
+- A timeout or "busy" answer (429, 503) goes straight to the fallback with no second wait. Bad JSON, other errors and rule violations get one retry, and the retry prompt lists the broken rules.
+- Any valid request returns 200 with three ideas and `source` ("ai" or "fallback"). Over the per-IP rate limit, people get the fallback set instead of an error.
+- Identical photo-less requests are cached in memory for 10 minutes, and a request that is already on its way is shared rather than sent twice. Requests with a garment photo are never cached.
+- `lib/fallbackIdeas.ts` is a bank of 26 templates with needs (tools, fabric, skill). It is tested across every garment, ten fibre mixes, all 129 toolkits and three skill levels: always three distinct, schema-valid ideas that pass the rule check.
+- Model name defaults to `gemini-3.5-flash` when `LLM_MODEL` is not set.
+- `agentRules: false` in `next.config.ts` so Next.js stops generating AGENTS.md and CLAUDE.md.

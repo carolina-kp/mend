@@ -1,56 +1,52 @@
-// Everything the AI is told lives here. Edit the wording freely:
-// rules, tone and output format. The fabric facts come from lib/fabrics.ts.
-import { GARMENTS, SKILLS, TOOLS } from "./config";
-import { FABRICS, FIBRES } from "./fabrics";
-import type { IdeasInput } from "./schema";
-
-const label = <T extends readonly { id: string; label: string }[]>(list: T, id: string) =>
-  list.find((x) => x.id === id)?.label ?? id;
+// Everything the AI is told lives here. Edit the wording freely.
+// The fabric facts and limits come from lib/buildConstraints.ts, so the model
+// works inside the rules instead of inventing its own.
+import type { Constraints } from "./buildConstraints";
+import { TOOL_RULES, FIBRES } from "./fabricRules";
 
 // ---------- Upcycle ideas ----------
 
-const IDEAS_SYSTEM = `You are a friendly, practical upcycling coach. You suggest realistic ways to
-rework a garment someone already owns. Fabric comes first: the material decides what is possible.
+const IDEAS_SYSTEM = `You are a practical upcycling coach for mend., a fabric-first app.
+You suggest realistic ways to rework a garment someone already owns.
+The fabric rules you are given come first: they decide what is possible.
 
 Rules:
-- Give exactly 3 ideas, ordered from easiest to most ambitious.
-- Every idea MUST respect the fabric notes. Never suggest something the notes warn against
-  (e.g. ironing acrylic, dyeing polyester, hot-washing wool unless felting is the goal).
-- Only use the tools the person owns. Cheap extras they can buy (thread, buttons, ribbon) are fine
-  as materials, but no new tools. If they own no tools, suggest no-sew ideas (cutting is allowed only
-  if they have scissors).
-- Match their skill level: a beginner gets difficulty 1-2 ideas, intermediate 2-4, advanced 3-5.
-- If there is a photo, use the garment's colour, condition and details (holes, stains, logos, cut).
-- Steps: 3 to 7 short, numbered-friendly steps, one action each, plain words, no jargon without a hint.
-- "why": one sentence linking the idea to this specific fabric's properties.
-- Tone: warm, encouraging, concise. Use metric units.
+- Give exactly 3 ideas: one quick (difficulty 1-2), one medium, one stretch (the hardest allowed).
+- Never suggest anything in the FORBIDDEN list, not even as an optional step.
+- Only use the tools they own. Cheap materials (thread, buttons, elastic, ribbon) are fine, new tools are not.
+  In "tools", list only tool names from their toolkit, written exactly as given.
+- Be specific: name the part of the garment and what it becomes ("Turn the sleeves into two cushion covers").
+- "fabricReason": one plain sentence on why this fabric suits the idea.
+- "warnings": the relevant risks from the RISKY list, short. Empty list if none apply.
+- "steps": 3 to 7 short steps, one action each, plain words, metric units.
+- "summary": one sentence. "menderBrief": two or three sentences a hired sewer could quote from.
+- "timeMinutes": a realistic whole number. "difficulty": 1 (very easy) to 5 (expert).
+- "id": a short kebab-case slug.
+- Calm, clear tone. No em dashes. Never claim an idea is eco-friendly or sustainable.
 
-Reply with JSON only, no markdown, in exactly this shape:
-{"ideas":[{"name":"short catchy name","difficulty":1,"time":"30 min","materials":["..."],"steps":["..."],"why":"..."}]}
-difficulty is an integer 1 (very easy) to 5 (expert).`;
+Reply with JSON only.`;
 
-export function buildIdeasPrompt(input: IdeasInput) {
-  const f = FABRICS[input.fabric];
-  const tools = !input.tools.length || input.tools.includes("none") ? "none" : input.tools.map((t) => label(TOOLS, t)).join(", ");
+export function buildIdeasPrompt(c: Constraints, hasImage: boolean, retryNote?: string) {
+  const list = (items: string[]) => (items.length ? items.map((x) => `- ${x}`).join("\n") : "- (none)");
+  const toolkit = c.tools.length ? c.tools.map((t) => TOOL_RULES[t].label).join(", ") : "none (no tools at all)";
 
-  // The per-fabric notes are injected here — this is what makes ideas fabric-aware.
-  const user = `Garment: ${label(GARMENTS, input.garment)} ${input.garmentImage ? "(see photo)" : "(no photo provided)"}
-Fabric: ${f.label}${input.composition ? ` (composition: ${input.composition})` : ""}
-Fabric notes:
-- Iron: ${f.iron === "no" ? "do not iron" : `${f.iron} heat max`}
-- Frays when cut: ${f.frays}
-- Stretch: ${f.stretch}
-- Takes household dye: ${f.dyeable}
-- Fabric glue holds: ${f.takesGlue}
-- Fabric paint bonds: ${f.takesPaint}
-${f.notes.map((n) => `- ${n}`).join("\n")}${
-    input.composition?.includes("elastane")
-      ? "\n- Contains elastane: it stretches, needs stretch stitches and low heat."
-      : ""
-  }
-Tools they own: ${tools}
-Skill level: ${label(SKILLS, input.skill)}
+  const user = `Garment: ${c.garmentLabel}${hasImage ? " (see photo: use its colour, condition and details)" : ""}
+Fabric: ${c.composition}${c.isDenim ? " (denim)" : ""}, ${c.construction}
+Toolkit: ${toolkit}
+Skill: ${c.skill} (max difficulty ${c.maxDifficulty})
 
+FABRIC FACTS
+${list(c.notes)}
+
+GOOD DIRECTIONS
+${list(c.safe)}
+
+RISKY (allowed, but add a warning)
+${list(c.risky)}
+
+FORBIDDEN (never suggest)
+${list(c.forbidden)}
+${retryNote ? `\nYour last answer broke these rules, fix them:\n${retryNote}\n` : ""}
 Suggest 3 upcycle ideas.`;
 
   return { system: IDEAS_SYSTEM, user };
@@ -62,9 +58,9 @@ export function buildLabelPrompt() {
   return {
     system: `You read clothing care labels. Extract the fibre composition of the main fabric
 (ignore lining). Map each fibre to one of: ${FIBRES.map((f) => f.id).join(", ")}.
-- Rayon, modal, lyocell → viscose. Spandex, Lycra → elastane. Polyamide → nylon.
+- Rayon, modal, lyocell are viscose. Spandex, Lycra are elastane. Polyamide is nylon.
 - Percentages should add up to 100.
-- Unreadable or not a care label → empty list.
+- Unreadable or not a care label: empty list.
 Reply with JSON only: {"parts":[{"fibre":"cotton","percent":60},{"fibre":"polyester","percent":40}]}`,
     user: "Read this care label.",
   };
