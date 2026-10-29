@@ -58,3 +58,13 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - The pipeline now always shows the heat warning on every idea when the fabric cannot take a medium iron (acrylic, polyester, nylon and blends with them), whatever the model wrote.
 - The presentation navigator shows the stretch jeans sample when someone jumps past the questions.
 - QR code and short URL for the landing page are left for the second pass (the brief lists them under demo mode, but this pass's scope did not).
+
+## Step 5: storage and /lab
+
+- `lib/store.ts` writes to a Supabase `events` table over plain REST (no SDK) when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set, otherwise to `data/events.jsonl` locally. The CSV export works with either.
+- One table for feedback and choices (`supabase/migrations/001_events.sql`): the columns people filter on, plus a `data` jsonb for the fibre mix, tools, idea titles and comment. Row level security on with no policies, so only the server's service role key can read or write.
+- `/lab` uses a shared passcode (`LAB_PASSCODE`). A correct passcode sets an httpOnly, same-site cookie holding a hash of the passcode, so changing the passcode logs everyone out. Lab is off when the variable is empty.
+- Lab shows testers, feedback count, average rating (all and AI-only), would-try percentage, make vs get-made counts, the "Target: at least 25% tried an idea" line, the latest 200 events and Export CSV. Cells that start like a spreadsheet formula are prefixed with a quote.
+- The A/B chatbot comparison, rating form and follow-up tracking are second pass.
+- Feedback route has its own per-IP rate limit and logs the event to the server log if the database write fails.
+- Node 22+ in the README (AI SDK is not used, but Node 20 is deprecated on Vercel).

@@ -377,3 +377,29 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .live-toggle input:focus-visible + .check-box { outline: 2px solid var(--accent); outline-offset: 3px; }
 .live-toggle input:checked + .check-box { background: var(--accent); border-color: var(--accent); color: #fff; }
 .live-toggle small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+
+/* Lab */
+.lab { max-width: 440px; margin: 0 auto; padding: 28px 16px 60px; }
+.lab-wide { max-width: 1180px; }
+.lab .app-logo { text-decoration: none; color: var(--ink); }
+.lab-eyebrow { display: block; margin-top: 26px; }
+.lab h1 { font: 500 37px/1.06 var(--serif); letter-spacing: -.045em; margin: 12px 0 10px; }
+.lab h2 { font: 500 26px var(--serif); letter-spacing: -.03em; margin: 34px 0 12px; }
+.lab p { font-size: 13px; line-height: 1.55; color: #5b6159; }
+.lab-top { display: flex; align-items: baseline; justify-content: space-between; }
+.lab-login { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.lab-login label { font-size: 10px; letter-spacing: 1.1px; font-weight: 700; }
+.lab-login input { height: 50px; border: 1px solid #c6c6bc; background: transparent; padding: 0 14px; font-size: 15px; }
+.lab-error { color: var(--accent) !important; font-weight: 600; }
+.lab-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); margin-top: 20px; }
+.lab-summary > div { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.lab-summary strong { font: 500 32px var(--serif); }
+.lab-summary small { font-size: 11px; color: var(--muted); }
+.lab-target { margin-top: 18px; border-left: 3px solid var(--accent); padding-left: 12px; font-weight: 600; color: var(--ink) !important; }
+.lab-actions { max-width: 260px; margin-top: 14px; }
+.lab-actions a { text-decoration: none; }
+.lab-table-wrap { overflow-x: auto; border: 1px solid var(--line); }
+.lab-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.lab-table th { text-align: left; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); background: var(--wash); }
+.lab-table th, .lab-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
+.lab-table td:last-child { white-space: normal; min-width: 200px; }
