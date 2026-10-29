@@ -48,6 +48,7 @@ export type Constraints = {
   forbidden: string[]; // never suggest
   notes: string[]; // fabric facts for the prompt
   warnings: string[]; // shown to the person
+  heatWarning?: string; // shown on every idea when the fabric cannot take a medium iron
 };
 
 export function normaliseParts(parts: FibrePart[]): FibrePart[] {
@@ -176,6 +177,7 @@ export function buildConstraints(input: ConstraintInput): Constraints {
     forbidden,
     notes,
     warnings,
+    heatWarning: maxIron === "none" || maxIron === "low" ? FIBRE_RULES[heatLimitedBy].warnings[0] : undefined,
   };
 }
 

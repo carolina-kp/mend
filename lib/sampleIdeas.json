@@ -1,0 +1,324 @@
+{
+  "wool-sweater": [
+    {
+      "id": "visible-mended-elbows",
+      "title": "Visible Mended Sweater Elbows",
+      "summary": "Strengthen thin sweater elbows using contrast thread stitching to extend the garment life.",
+      "difficulty": 1,
+      "timeMinutes": 45,
+      "tools": [
+        "Needle and thread",
+        "Scissors"
+      ],
+      "materials": [
+        "Contrast embroidery thread"
+      ],
+      "steps": [
+        "Turn the sweater inside out to find the thin patches near the elbows.",
+        "Thread your needle with a double strand of contrasting thread.",
+        "Stitch small parallel vertical lines across the thin area 5 mm apart.",
+        "Weave horizontal lines over and under the vertical lines to form a woven patch.",
+        "Secure the thread on the inside with a small knot."
+      ],
+      "fabricReason": "Wool knit takes hand darning well, allowing contrast thread to blend into the weave seamlessly.",
+      "warnings": [
+        "Hot water and rubbing will felt and shrink wool. Only do it on purpose."
+      ],
+      "menderBrief": "Darn the elbow areas using a visible woven patch technique. Use sturdy contrast thread and secure all ends tightly."
+    },
+    {
+      "id": "felted-wool-cuff-mittens",
+      "title": "Felted Wool Cuff Mittens",
+      "summary": "Turn the lower sleeves and cuffs into warm fingerless mittens.",
+      "difficulty": 2,
+      "timeMinutes": 90,
+      "tools": [
+        "Needle and thread",
+        "Scissors"
+      ],
+      "materials": [
+        "Thread"
+      ],
+      "steps": [
+        "Wash the sweater in hot water to purposely felt the wool so it will not unravel.",
+        "Cut 20 cm off the bottom of each sleeve using scissors.",
+        "Try on the sleeve pieces with the ribbed cuff at your wrist.",
+        "Mark a 3 cm gap for your thumb on the side seam.",
+        "Stitch the side seam above and below the thumb opening using needle and thread."
+      ],
+      "fabricReason": "Felted wool knit creates a dense fabric that keeps hands warm and will not fray when cut.",
+      "warnings": [
+        "Felting with a hot wash: shrinks the wool a lot, only do it on purpose."
+      ],
+      "menderBrief": "Felt the sleeve ends first to prevent unraveling. Cut two wrist warmers from the lower sleeves and leave a clean side opening for the thumb."
+    },
+    {
+      "id": "sweater-body-cushion-cover",
+      "title": "Sweater Body Cushion Cover",
+      "summary": "Transform the main torso of the sweater into a soft, cozy cushion cover.",
+      "difficulty": 3,
+      "timeMinutes": 120,
+      "tools": [
+        "Needle and thread",
+        "Scissors"
+      ],
+      "materials": [
+        "Thread",
+        "Cushion insert 40x40 cm"
+      ],
+      "steps": [
+        "Stitch two rows of small running stitches 5 mm apart straight across the chest, from armpit to armpit.",
+        "Cut just above the stitched rows to remove the top of the sweater.",
+        "Turn the body piece inside out.",
+        "Sew the top cut edge completely closed using needle and thread with a strong backstitch.",
+        "Insert a 40x40 cm cushion pad through the open bottom hem.",
+        "Sew the bottom hem closed with small neat stitches."
+      ],
+      "fabricReason": "Wool sweater knit provides a thick texture ideal for home furnishings like cushion covers.",
+      "warnings": [
+        "Cutting a knit: stitch twice along the line first so it does not unravel."
+      ],
+      "menderBrief": "Square off the torso section of the wool sweater. Secure raw cut knit edges with double stitching before hand-sewing the seams to enclose a 40x40 cm cushion pad."
+    }
+  ],
+  "stretch-jeans": [
+    {
+      "id": "raw-hem-cropped-jeans",
+      "title": "Raw Hem Cropped Jeans",
+      "summary": "Crop the lower legs of the jeans to create a modern raw hem finish.",
+      "difficulty": 1,
+      "timeMinutes": 20,
+      "tools": [
+        "Scissors"
+      ],
+      "materials": [
+        "Chalk or washable marker"
+      ],
+      "steps": [
+        "Try on the jeans and mark your desired new length with chalk.",
+        "Lay the jeans flat on a smooth surface and line up the inseams.",
+        "Cut straight across both legs 1 cm below your mark using sharp scissors.",
+        "Use your fingers to pull at the cut threads to create a soft frayed edge.",
+        "Wash the jeans to set the fringe finish along the cut line."
+      ],
+      "fabricReason": "Woven denim frays easily when cut, making it ideal for a quick raw hem project.",
+      "warnings": [
+        "Heavy fraying: finish cut edges or make the fray part of the design."
+      ],
+      "menderBrief": "Crop the jean legs 1 cm below the target mark using scissors. Pull the crosswise threads manually to establish a uniform 1 cm raw hem fringe."
+    },
+    {
+      "id": "back-pocket-wall-organiser",
+      "title": "Jean Pocket Wall Organiser",
+      "summary": "Remove the back pockets and sew them onto a panel cut from the jean leg to store small tools.",
+      "difficulty": 3,
+      "timeMinutes": 90,
+      "tools": [
+        "Scissors",
+        "Sewing machine"
+      ],
+      "materials": [
+        "Matching thread"
+      ],
+      "steps": [
+        "Cut a wide rectangular panel from the cleanest section of one jean leg.",
+        "Carefully cut out the two back pockets from the jeans leaving a 1 cm border.",
+        "Finish all four edges of the large denim panel using a zigzag stitch.",
+        "Position the pockets onto the panel and pin them in place.",
+        "Stitch around the sides and bottom of each pocket onto the panel, reinforcing the top corners."
+      ],
+      "fabricReason": "Sturdy cotton denim holds its shape well when used to construct utility organisers.",
+      "warnings": [
+        "Stretch fabric: use a stretch stitch or ballpoint needle, do not pull while sewing."
+      ],
+      "menderBrief": "Construct a rectangular denim wall hanging panel with zigzagged edges. Mount the removed back pockets using reinforced top tacking."
+    },
+    {
+      "id": "classic-denim-tote-bag",
+      "title": "Straight Cut Denim Tote Bag",
+      "summary": "Turn the main body of the jeans into a durable tote bag with straps made from the legs.",
+      "difficulty": 4,
+      "timeMinutes": 180,
+      "tools": [
+        "Scissors",
+        "Sewing machine"
+      ],
+      "materials": [
+        "Heavy duty thread"
+      ],
+      "steps": [
+        "Cut off both legs of the jeans straight across just below the crotch seam.",
+        "Turn the upper body section inside out and stitch the bottom cut opening closed.",
+        "Cut two long strips from the legs to form 4 cm wide shoulder straps.",
+        "Fold and topstitch the straps along both long edges for strength.",
+        "Stitch the ends of the straps securely inside the waistband on the front and back."
+      ],
+      "fabricReason": "Denim provides excellent structure and durability for a daily carry bag.",
+      "warnings": [
+        "Machine sewing across several denim layers: use a denim needle (100/16 or 110/18) and go slowly.",
+        "Heavy fraying: finish cut edges or make the fray part of the design."
+      ],
+      "menderBrief": "Convert the upper section of the jeans into a tote bag by closing the bottom cut edge with a reinforced seam. Attach double-stitched straps cut from the legs inside the original waistband."
+    }
+  ],
+  "cotton-shirt": [
+    {
+      "id": "raw-edge-cropped-shirt",
+      "title": "Raw Edge Cropped Shirt",
+      "summary": "Crop the lower body of the shirt to create a modern short shirt with a deliberately frayed raw hem.",
+      "difficulty": 1,
+      "timeMinutes": 20,
+      "tools": [
+        "Scissors",
+        "Iron"
+      ],
+      "materials": [
+        "Chalk or washable marker"
+      ],
+      "steps": [
+        "Try on the shirt and mark the desired crop height using chalk.",
+        "Lay the shirt flat on a hard surface and smooth out all wrinkles.",
+        "Cut straight across the marked line using sharp scissors.",
+        "Press the new raw edge flat with an iron on high heat.",
+        "Gently pull at the cut threads to create a uniform 2 mm frayed border."
+      ],
+      "fabricReason": "Woven cotton frays neatly when cut, making it ideal for deliberate raw-edge designs.",
+      "warnings": [
+        "Raw edges will continue to fray slightly over time when washed."
+      ],
+      "menderBrief": "Crop the lower hem of the shirt using scissors to create a deliberate raw-edge look. Press the new bottom hem flat and gently pull edge threads to create a clean, intentional fray."
+    },
+    {
+      "id": "no-sew-tote-bag",
+      "title": "No-Sew Tied Tote Bag",
+      "summary": "Transform the body of the shirt into a functional tote bag using a simple cut-and-tie fringe method.",
+      "difficulty": 2,
+      "timeMinutes": 45,
+      "tools": [
+        "Scissors",
+        "Iron"
+      ],
+      "materials": [
+        "Ruler"
+      ],
+      "steps": [
+        "Cut off the sleeves and the neck collar following the inner seams.",
+        "Turn the shirt inside out and align the front and back bottom edges.",
+        "Cut vertical strips along the bottom hem measuring 2 cm wide and 8 cm long through both layers.",
+        "Knot each front strip securely to its corresponding back strip across the entire bottom.",
+        "Turn the bag right side out and press the straps flat with an iron."
+      ],
+      "fabricReason": "Sturdy woven cotton holds structure well and creates durable knots at the bottom of the bag.",
+      "warnings": [
+        "Unfinished cut edges along the straps and fringe may fray with heavy use."
+      ],
+      "menderBrief": "Convert the shirt into a no-sew tote bag by removing the sleeves and collar. Cut matching 8 cm fringe strips at the bottom hem and double-knot front and back strips together to form the base."
+    },
+    {
+      "id": "glued-pocket-patch-shirt",
+      "title": "Glued Appliqué Patch Shirt",
+      "summary": "Use fabric from the cut sleeves to create decorative appliqué patches on the front pocket or chest area.",
+      "difficulty": 3,
+      "timeMinutes": 60,
+      "tools": [
+        "Scissors",
+        "Iron",
+        "Fabric glue"
+      ],
+      "materials": [
+        "Paper template"
+      ],
+      "steps": [
+        "Cut off one sleeve and lay the fabric completely flat.",
+        "Trace a geometric shape onto paper and cut out the template.",
+        "Use the template to cut out two matching fabric shapes from the sleeve.",
+        "Fold 5 mm along all edges of the fabric shapes and press flat with an iron.",
+        "Apply fabric glue evenly to the folded edges and press firmly onto the shirt chest.",
+        "Iron the glued area for 30 seconds to help set the adhesive bond."
+      ],
+      "fabricReason": "Woven cotton responds well to pressing crisp 5 mm folds, which keeps glued edges neat.",
+      "warnings": [
+        "Cut edges must be folded under before gluing, or heavy fraying will occur in the wash."
+      ],
+      "menderBrief": "Create geometric appliqué patches using fabric cut from the shirt sleeve. Fold under all patch edges by 5 mm, press flat, and secure to the main shirt using fabric glue."
+    }
+  ],
+  "acrylic-sweater": [
+    {
+      "id": "embroidered-sweater--neckline",
+      "title": "Embroidered Neckline Accent",
+      "summary": "Add simple decorative hand-embroidered stitches around the existing sweater neckline.",
+      "difficulty": 1,
+      "timeMinutes": 45,
+      "tools": [
+        "Needle and thread"
+      ],
+      "materials": [
+        "Contrast embroidery thread"
+      ],
+      "steps": [
+        "Thread your needle with a double strand of thread and knot the end.",
+        "Begin stitching simple straight stitches along the ribbed neckline seam.",
+        "Work your way around the entire neck opening keeping stitches evenly spaced.",
+        "Secure the thread inside the garment with a double knot."
+      ],
+      "fabricReason": "Acrylic knit holds surface embroidery well without distorting if stitches are kept loose.",
+      "warnings": [
+        "Acrylic melts under a hot iron. Keep heat away from it.",
+        "Stretch fabric: do not pull thread too tightly or the neck ribbing will pucker."
+      ],
+      "menderBrief": "Add simple decorative hand embroidery around the garment neckline. Ensure tension is loose to allow the knit to stretch."
+    },
+    {
+      "id": "buttoned-cuff--cinch",
+      "title": "Cinched Button Cuffs",
+      "summary": "Fold and sew decorative buttons onto the wrists to gather and cinch the sleeves.",
+      "difficulty": 2,
+      "timeMinutes": 60,
+      "tools": [
+        "Needle and thread"
+      ],
+      "materials": [
+        "Two large buttons"
+      ],
+      "steps": [
+        "Pinch a small 2 cm fold on the upper side of one sleeve cuff.",
+        "Thread your needle and anchor the thread inside the cuff fold.",
+        "Sew a button directly over the pinch to secure the fold flat.",
+        "Repeat the exact same pinch and button attachment on the second cuff."
+      ],
+      "fabricReason": "The soft acrylic knit easily folds into neat pleats without adding heavy bulk.",
+      "warnings": [
+        "Acrylic melts under a hot iron. Keep heat away from it.",
+        "Stretch fabric: stitch firmly through all layers of the fold to prevent stretching out."
+      ],
+      "menderBrief": "Create a decorative pleat at each sleeve cuff and secure it in place by sewing a button over the fold."
+    },
+    {
+      "id": "surface-patch--accent",
+      "title": "Sew-On Patch Accents",
+      "summary": "Stitch fabric patches onto the elbows or chest using basic hand stitches.",
+      "difficulty": 3,
+      "timeMinutes": 90,
+      "tools": [
+        "Needle and thread"
+      ],
+      "materials": [
+        "Two sew-on fabric patches"
+      ],
+      "steps": [
+        "Place the sweater flat and position one patch over the desired area.",
+        "Anchor your thread inside the sweater body under the patch edge.",
+        "Use a catch stitch or whip stitch around the full perimeter of the patch.",
+        "Knot the thread securely on the inside of the sweater.",
+        "Repeat the process for the second patch on the opposite side."
+      ],
+      "fabricReason": "Acrylic sweaters provide a thick stable base for securing applique patches by hand.",
+      "warnings": [
+        "Acrylic melts under a hot iron. Keep heat away from it.",
+        "Stretch fabric: keep stitches relaxed so the knit can stretch when worn."
+      ],
+      "menderBrief": "Hand stitch two applique patches onto the sweater body or sleeves using a neat catch stitch. Maintain fabric flexibility."
+    }
+  ]
+}

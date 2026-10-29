@@ -2,16 +2,40 @@
 // Steps 1, 2, 4, 5: garment, photo, tools, skill.
 import { useRef, useState } from "react";
 import { GARMENTS, SKILLS, TOOLS, type ToolId } from "@/lib/config";
+import { SAMPLE_GARMENTS, type SampleGarment } from "@/lib/sampleGarments";
 import { resizeImage } from "@/lib/resizeImage";
 import type { Answers } from "../flow";
 import { Footer, Icon, OptionRow, PrimaryButton, SectionHeading } from "../ui";
 
 type StepProps = { a: Answers; set: (patch: Partial<Answers>) => void; next: () => void };
 
-export function GarmentScreen({ a, set, next }: StepProps) {
+export function GarmentScreen({ a, set, next, onSample }: StepProps & { onSample: (s: SampleGarment, live: boolean) => void }) {
+  const [samplesOpen, setSamplesOpen] = useState(false);
+  const [live, setLive] = useState(false);
   return (
     <div className="screen-content garment-screen">
       <SectionHeading eyebrow="01 / 05  ·  THE GARMENT" title="What do you want to rework?" />
+      <div className="sample-panel">
+        <button type="button" className="sample-toggle" onClick={() => setSamplesOpen((o) => !o)} aria-expanded={samplesOpen}>
+          <span><strong>Try a sample garment</strong><small>No garment to hand? Jump straight to three ideas.</small></span>
+          <span className={samplesOpen ? "rotate" : ""}><Icon name="chevron" size={18} /></span>
+        </button>
+        {samplesOpen && (
+          <div className="sample-list">
+            {SAMPLE_GARMENTS.map((g) => (
+              <button type="button" key={g.id} onClick={() => onSample(g, live)}>
+                <span><strong>{g.title}</strong><small>{g.why}</small></span>
+                <Icon name="arrow" size={17} />
+              </button>
+            ))}
+            <label className="live-toggle">
+              <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} />
+              <span className="check-box" aria-hidden>{live && <Icon name="check" size={13} />}</span>
+              <span>Use live AI <small>Off: saved ideas, works offline</small></span>
+            </label>
+          </div>
+        )}
+      </div>
       <ol className="how-strip" aria-label="How it works in 3 steps">
         <li><span>01</span>Photograph or pick the garment</li>
         <li><span>02</span>Add the fabric and your tools</li>

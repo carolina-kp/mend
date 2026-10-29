@@ -697,7 +697,7 @@ function buildIdea(t: Template, c: Constraints): Idea {
     difficulty: t.difficulty,
     timeMinutes: time,
     ...body,
-    warnings: [...new Set([...(body.warnings ?? []), ...c.warnings])].slice(0, 3),
+    warnings: [...new Set([...(c.heatWarning ? [c.heatWarning] : []), ...(body.warnings ?? []), ...c.warnings])].slice(0, 3),
     menderBrief: `${body.title} from ${w.aFabric} ${w.garment} (${c.composition}). ${body.summary} About ${time} minutes, difficulty ${t.difficulty} of 5.`,
   };
 }

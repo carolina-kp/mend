@@ -359,3 +359,21 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .stars-value { margin-left: 8px; font-size: 12px; color: var(--muted); }
 .feedback-options { margin-top: 0; }
 .feedback-options button { height: 64px; font-size: 26px; }
+
+/* Teacher demo: sample garments */
+.sample-panel { margin-top: 18px; border: 1px solid var(--accent); background: #fffdf8; }
+.sample-toggle { width: 100%; border: 0; background: transparent; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; color: var(--accent); }
+.sample-toggle > span:first-child, .sample-list button > span { display: flex; flex-direction: column; gap: 3px; }
+.sample-toggle strong { font: 500 19px var(--serif); letter-spacing: -.02em; }
+.sample-toggle small, .sample-list small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.sample-toggle .rotate { transform: rotate(180deg); }
+.sample-list { border-top: 1px solid var(--line); padding: 0 16px 10px; }
+.sample-list button { width: 100%; min-height: 62px; border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: 10px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
+.sample-list button strong { font-size: 13px; }
+.sample-list button svg, .sample-toggle svg { flex: none; }
+.sample-list button:hover { color: var(--accent); }
+.live-toggle { display: flex; align-items: center; gap: 10px; padding: 12px 0 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.live-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.live-toggle input:focus-visible + .check-box { outline: 2px solid var(--accent); outline-offset: 3px; }
+.live-toggle input:checked + .check-box { background: var(--accent); border-color: var(--accent); color: #fff; }
+.live-toggle small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }

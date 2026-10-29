@@ -110,7 +110,9 @@ function finish(ideas: Idea[], c: Constraints): Idea[] {
       let id = idea.id.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 40) || `idea-${i + 1}`;
       if (seen.has(id)) id = `${id}-${i + 1}`;
       seen.add(id);
-      const warnings = idea.warnings.length ? idea.warnings : c.warnings.slice(0, 1);
+      let warnings = idea.warnings.length ? idea.warnings : c.warnings.slice(0, 1);
+      // Heat-sensitive fabric: the heat warning is always shown, whatever the model wrote.
+      if (c.heatWarning && !warnings.includes(c.heatWarning)) warnings = [c.heatWarning, ...warnings].slice(0, 4);
       return { ...idea, id, warnings };
     })
     .sort((a, b) => a.difficulty - b.difficulty);

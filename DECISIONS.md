@@ -49,3 +49,12 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - Feedback: 1 to 5 stars, "Would you try one?" yes or no, optional comment. Stored with the anonymous session id, answers and idea titles (`lib/events.ts` defines exactly what is allowed).
 - Reset link in the app bar (from screen 2 on) clears answers and starts a new anonymous session id.
 - Removed `lib/fabrics.ts` and `lib/demo.ts` (replaced by `fabricRules.ts` and the fallback bank). No pages were removed.
+
+## Step 4: teacher demo mode
+
+- "Try a sample garment" sits at the top of the landing screen and opens the four samples from the brief. Picking one goes straight to the three ideas (two taps).
+- Saved ideas live in `lib/sampleIdeas.json`. They were generated once by the full pipeline (rules, Gemini, rule check) on 29 October 2026, then lightly edited by hand: one step order fixed on the wool cushion, one typo on the jeans tote, and the acrylic heat warning added. `lib/sampleGarments.test.ts` re-checks them against the rules on every test run.
+- "Use live AI" (off by default) sends the sample through `/api/ideas` instead.
+- The pipeline now always shows the heat warning on every idea when the fabric cannot take a medium iron (acrylic, polyester, nylon and blends with them), whatever the model wrote.
+- The presentation navigator shows the stretch jeans sample when someone jumps past the questions.
+- QR code and short URL for the landing page are left for the second pass (the brief lists them under demo mode, but this pass's scope did not).

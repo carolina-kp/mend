@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
 import { getIdeas, sendEvent, sessionId } from "@/lib/api";
-import { pickFallbackIdeas } from "@/lib/fallbackIdeas";
+import { SAMPLE_GARMENTS, type SampleGarment } from "@/lib/sampleGarments";
 import type { IdeasResponse } from "@/lib/schema";
 import { ComponentSheet } from "./ComponentSheet";
 import { EMPTY_ANSWERS, SCREENS, isComplete, type Answers, type ScreenId } from "./flow";
@@ -17,12 +17,10 @@ import { Icon } from "./ui";
 const num = (i: number) => String(i + 1).padStart(2, "0");
 
 // Shown when someone jumps past the questions from the presentation navigator.
-const PREVIEW_ANSWERS: Answers = { garment: "jeans", parts: [{ fibre: "cotton", percent: 100 }], tools: ["scissors", "hand_sewing"], skill: "beginner" };
-const PREVIEW_RESULT: IdeasResponse = {
-  ideas: pickFallbackIdeas({ garment: "jeans", parts: PREVIEW_ANSWERS.parts, tools: PREVIEW_ANSWERS.tools, skill: "beginner" }),
-  source: "sample",
-  note: "Sample ideas for cotton jeans. Go through the steps to get your own.",
-};
+const PREVIEW = SAMPLE_GARMENTS[1];
+const PREVIEW_ANSWERS: Answers = { garment: PREVIEW.garment, parts: PREVIEW.parts, tools: PREVIEW.tools, skill: PREVIEW.skill };
+const PREVIEW_RESULT: IdeasResponse = { ideas: PREVIEW.ideas, source: "sample", note: "Sample ideas for stretch jeans. Go through the steps to get your own." };
+const SAMPLE_NOTE = "Saved ideas for a sample garment, ready offline.";
 
 export function Studio() {
   const [screen, setScreen] = useState<ScreenId>("garment");
@@ -32,6 +30,7 @@ export function Studio() {
   const [result, setResult] = useState<IdeasResponse>();
   const [chosen, setChosen] = useState(0);
   const [opened, setOpened] = useState(false); // did they look at an idea before rating?
+  const [sample, setSample] = useState<SampleGarment["id"]>();
   const [attempt, setAttempt] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -60,11 +59,22 @@ export function Studio() {
     setAttempt((n) => n + 1);
     go("loading");
   }
+  // Teacher demo: load a sample garment. Saved ideas by default, a real AI call if "Use live AI" is on.
+  function trySample(g: SampleGarment, live: boolean) {
+    setA({ garment: g.garment, parts: g.parts, tools: g.tools, skill: g.skill });
+    setSample(g.id);
+    if (live) return findIdeas();
+    setResult({ ideas: g.ideas, source: "sample", note: SAMPLE_NOTE });
+    setChosen(0);
+    setOpened(false);
+    go("results");
+  }
   function reset() {
     setA(EMPTY_ANSWERS);
     setResult(undefined);
     setChosen(0);
     setOpened(false);
+    setSample(undefined);
     setFromLabel(false);
     sessionId(true);
     go("garment");
@@ -77,6 +87,7 @@ export function Studio() {
     tools: shownAnswers.tools,
     skill: shownAnswers.skill,
     source: shown.source,
+    sample,
     ideas: shown.ideas.map((i) => i.title),
   });
 
@@ -102,7 +113,7 @@ export function Studio() {
 
   const props = { a, set };
   const content = {
-    garment: <GarmentScreen {...props} next={() => go("photo")} />,
+    garment: <GarmentScreen {...props} next={() => (setSample(undefined), go("photo"))} onSample={trySample} />,
     photo: <PhotoScreen {...props} next={() => go("fabricChoice")} />,
     fabricChoice: (
       <FabricChoiceScreen {...props} next={() => (setFromLabel(true), go("fabric"))} onManual={() => (setFromLabel(false), go("fabric"))} />
