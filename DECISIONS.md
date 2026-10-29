@@ -68,3 +68,5 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - The A/B chatbot comparison, rating form and follow-up tracking are second pass.
 - Feedback route has its own per-IP rate limit and logs the event to the server log if the database write fails.
 - Node 22+ in the README (AI SDK is not used, but Node 20 is deprecated on Vercel).
+- Supabase project "mend" created on 29 October 2026 in carolina-kp's Org (free tier, $0/month, eu-central-1 Frankfurt, close to Copenhagen). Migration `001_events` applied. The security advisor's "RLS enabled, no policy" notice is intended: only the server key can read or write.
+- `lib/store.ts` accepts both legacy JWT service_role keys and the newer `sb_secret_` keys (sent only in the `apikey` header).

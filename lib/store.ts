@@ -11,7 +11,10 @@ const FILE = "data/events.jsonl";
 const supabase = () => {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  return url && key ? { url: `${url.replace(/\/$/, "")}/rest/v1/events`, headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" } } : undefined;
+  if (!url || !key) return undefined;
+  // Legacy service_role keys are JWTs and also go in Authorization; new sb_secret_ keys only go in apikey.
+  const auth: Record<string, string> = key.startsWith("eyJ") ? { Authorization: `Bearer ${key}` } : {};
+  return { url: `${url.replace(/\/$/, "")}/rest/v1/events`, headers: { apikey: key, ...auth, "Content-Type": "application/json" } };
 };
 
 export const storeName = () => (supabase() ? "Supabase" : "local file (data/events.jsonl)");
