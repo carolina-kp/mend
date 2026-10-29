@@ -66,7 +66,11 @@ export function Stepper({ name, value, onChange }: { name: string; value: number
       <span>{name}</span>
       <div className="stepper-control">
         <button type="button" aria-label={`Decrease ${name}`} onClick={() => onChange(Math.max(0, value - 5))}><Icon name="minus" size={15} /></button>
-        <strong>{value}<small>%</small></strong>
+        <strong>
+          <input type="number" inputMode="numeric" min={0} max={100} aria-label={`${name} percentage`} value={value}
+            onChange={(e) => onChange(Math.max(0, Math.min(100, Math.round(Number(e.target.value) || 0))))} />
+          <small>%</small>
+        </strong>
         <button type="button" aria-label={`Increase ${name}`} onClick={() => onChange(Math.min(100, value + 5))}><Icon name="plus" size={15} /></button>
       </div>
     </div>
@@ -87,13 +91,13 @@ export function Footer({ children, note }: { children: ReactNode; note?: string 
   return <div className="screen-footer">{note && <p className="footer-note">{note}</p>}{children}</div>;
 }
 
-export function ThanksState({ label, text, onBack }: { label: string; text: string; onBack: () => void }) {
+export function ThanksState({ label, text, onBack, backLabel = "Back to your ideas" }: { label: string; text: string; onBack: () => void; backLabel?: string }) {
   return (
     <div className="thanks-state">
       <span><Icon name="check" size={36} /></span>
       <strong>{label}</strong>
       <p>{text}</p>
-      <SecondaryButton onClick={onBack}>Back to your ideas <Icon name="arrow" size={17} /></SecondaryButton>
+      <SecondaryButton onClick={onBack}>{backLabel} <Icon name="arrow" size={17} /></SecondaryButton>
     </div>
   );
 }

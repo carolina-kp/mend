@@ -7,7 +7,7 @@ const sans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin"] });
 const serif = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["SOFT", "WONK", "opsz"] });
 
 export const metadata: Metadata = {
-  title: `${APP_NAME}. — the rework studio`,
+  title: `${APP_NAME}. The rework studio`,
   description: "Fabric-first upcycle ideas for the clothes you already own.",
 };
 

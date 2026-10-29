@@ -1,9 +1,10 @@
 // "The studio kit": the design's component sheet, shown in the presentation.
-import { SAMPLE_IDEAS } from "@/lib/demo";
+import { pickFallbackIdeas } from "@/lib/fallbackIdeas";
 import { IdeaCard } from "./screens/ResultScreens";
 import { FibreChip, OptionRow, PrimaryButton, SecondaryButton, Stepper } from "./ui";
 
 const noop = () => {};
+const SHEET_IDEA = pickFallbackIdeas({ garment: "jeans", parts: [{ fibre: "cotton", percent: 100 }], tools: ["scissors", "hand_sewing"], skill: "beginner" })[2];
 
 export function ComponentSheet() {
   return (
@@ -15,7 +16,7 @@ export function ComponentSheet() {
       </div>
       <div className="sheet-grid">
         <div className="sheet-block"><span className="tiny-label">01 / BUTTONS</span><PrimaryButton>Continue</PrimaryButton><SecondaryButton>Secondary action</SecondaryButton></div>
-        <div className="sheet-block"><span className="tiny-label">02 / SELECTABLE ROW</span><OptionRow title="Needle & thread" selected /><OptionRow title="Fabric glue" /></div>
+        <div className="sheet-block"><span className="tiny-label">02 / SELECTABLE ROW</span><OptionRow title="Needle and thread" selected /><OptionRow title="Fabric glue" /></div>
         <div className="sheet-block">
           <span className="tiny-label">03 / FIBRE CHIP + STEPPER</span>
           <div className="sheet-chips"><FibreChip name="Cotton" selected onClick={noop} /><FibreChip name="Linen" selected={false} onClick={noop} /></div>
@@ -32,7 +33,7 @@ export function ComponentSheet() {
           <div className="type-display">A second life.</div><p>Display / Fraunces · 36 / 1.04</p>
           <div className="type-ui">Made for making.</div><p>UI / DM Sans · 14 / 1.5</p>
         </div>
-        <div className="sheet-block"><span className="tiny-label">06 / IDEA CARD</span><IdeaCard idea={SAMPLE_IDEAS[2]} index={0} open={false} onToggle={noop} onService={noop} /></div>
+        <div className="sheet-block"><span className="tiny-label">06 / IDEA CARD</span><IdeaCard idea={SHEET_IDEA} index={0} onOpen={noop} /></div>
       </div>
     </div>
   );

@@ -37,3 +37,15 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - `lib/fallbackIdeas.ts` is a bank of 26 templates with needs (tools, fabric, skill). It is tested across every garment, ten fibre mixes, all 129 toolkits and three skill levels: always three distinct, schema-valid ideas that pass the rule check.
 - Model name defaults to `gemini-3.5-flash` when `LLM_MODEL` is not set.
 - `agentRules: false` in `next.config.ts` so Next.js stops generating AGENTS.md and CLAUDE.md.
+
+## Step 3: the main flow
+
+- Twelve screens: garment (landing), photo (optional, "Skip the photo"), fabric choice, fibre mix, tools, skill, loading, three ideas, idea detail, make it myself, get it made, feedback.
+- The brief's separate "choose" screen is folded into the bottom of the idea detail (two buttons), to save a tap in the two-minute demo.
+- Ideas are labelled QUICK, MEDIUM, STRETCH by position (they arrive easiest first).
+- The fibre mix screen shows a live rule preview (iron heat, cut edges, stretch, felting) from `buildConstraints`, so the fabric-first logic is visible before any AI runs. Percentages can be typed as well as stepped by 5, so 98% cotton and 2% elastane can be entered.
+- If the browser cannot reach the server at all, `lib/api.ts` runs the same fallback bank in the browser, so ideas still appear.
+- Get it made (pass 1): the ready brief with notes, budget in kr and a "Copy brief as text" button. "Request a quote" records only the choice, whether notes were written and the budget. Notes text and emails are not stored until the quote route is built in pass 2.
+- Feedback: 1 to 5 stars, "Would you try one?" yes or no, optional comment. Stored with the anonymous session id, answers and idea titles (`lib/events.ts` defines exactly what is allowed).
+- Reset link in the app bar (from screen 2 on) clears answers and starts a new anonymous session id.
+- Removed `lib/fabrics.ts` and `lib/demo.ts` (replaced by `fabricRules.ts` and the fallback bank). No pages were removed.

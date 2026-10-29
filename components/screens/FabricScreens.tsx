@@ -2,7 +2,8 @@
 // Step 3: fabric. Either photograph the care label (AI reads the %s) or enter fibres by hand.
 import { useRef, useState } from "react";
 import { readLabel } from "@/lib/api";
-import { FABRICS, FIBRES, fabricFromParts, partsToText, type FibreId } from "@/lib/fabrics";
+import { buildConstraints } from "@/lib/buildConstraints";
+import { FIBRES, fibreLabel, type FibreId } from "@/lib/fabricRules";
 import { resizeImage } from "@/lib/resizeImage";
 import type { Answers } from "../flow";
 import { FibreChip, Footer, Icon, PrimaryButton, SectionHeading, Stepper } from "../ui";
@@ -57,6 +58,10 @@ export function FabricChoiceScreen({ set, next, onManual }: Props & { onManual: 
       </div>
       <input className="hidden-input" ref={input} type="file" accept="image/*" onChange={onLabel} />
       {status === "error" && <p className="inline-note">{error}</p>}
+      <div className="privacy-note">
+        <span className="privacy-symbol">i</span>
+        <p>Your photo is read once to find the fabric label and is not saved.</p>
+      </div>
       <p className="choice-footnote">Not sure? Make your best guess. You can always change it later.</p>
     </div>
   );
@@ -65,7 +70,8 @@ export function FabricChoiceScreen({ set, next, onManual }: Props & { onManual: 
 export function FabricMixScreen({ a, set, next, fromLabel }: Props & { fromLabel: boolean }) {
   const parts = a.parts;
   const total = parts.reduce((s, p) => s + p.percent, 0);
-  const fabric = fabricFromParts(parts, a.garment);
+  // Live preview of what the rules say about this mix: the fabric-first part, made visible.
+  const rules = total === 100 && parts.length ? buildConstraints({ garment: a.garment ?? "shirt", parts, tools: [], skill: "beginner" }) : undefined;
 
   function toggle(fibre: FibreId) {
     if (parts.some((p) => p.fibre === fibre)) return set({ parts: parts.filter((p) => p.fibre !== fibre) });
@@ -95,12 +101,23 @@ export function FabricMixScreen({ a, set, next, fromLabel }: Props & { fromLabel
       </div>
       <div className="care-tag">
         <span className="tag-hole" />
-        <span>FABRIC ID / 001</span>
-        <strong>Treated as: {FABRICS[fabric].label}</strong>
-        <small>We start with the fibre that makes up most of your garment.</small>
+        <span>WHAT YOUR FABRIC CAN TAKE</span>
+        {rules ? (
+          <>
+            <strong>{rules.isDenim ? "Denim" : fibreLabel(rules.mainFibre)}, {rules.construction}</strong>
+            <ul className="rule-preview">
+              <li>Iron: {{ none: `no heat, ${fibreLabel(rules.heatLimitedBy).toLowerCase()} melts`, low: "low heat only", medium: "medium heat, with a cloth", high: "high heat is fine" }[rules.maxIron]}</li>
+              <li>Cut edges: {rules.construction === "knit" ? "unravel, stitch first" : rules.frays >= 1.5 ? "fray a lot" : "fray a little"}</li>
+              {rules.stretch && <li>Stretches: needs a stretch stitch</li>}
+              {rules.canFelt && <li>Can be felted on purpose</li>}
+            </ul>
+          </>
+        ) : (
+          <small>Get to 100% to see what this fabric can take.</small>
+        )}
       </div>
       <Footer note={ready ? "Your fabric mix is ready." : `${Math.abs(100 - total)}% ${total < 100 ? "to go" : "over"} before you can continue`}>
-        <PrimaryButton disabled={!ready} onClick={() => (set({ fabric, composition: partsToText(parts) }), next())}>Continue</PrimaryButton>
+        <PrimaryButton disabled={!ready} onClick={next}>Continue</PrimaryButton>
       </Footer>
     </div>
   );

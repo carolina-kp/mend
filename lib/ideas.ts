@@ -15,7 +15,8 @@ const CACHE_MS = 10 * 60_000; // identical requests reuse the answer for 10 minu
 export const BUSY_NOTE = "Showing a standard idea set because the AI is busy.";
 
 // Gemini gets the same shape we validate against.
-const { $schema: _drop, ...IDEAS_JSON_SCHEMA } = z.toJSONSchema(IdeasResult) as Record<string, unknown>;
+const IDEAS_JSON_SCHEMA = z.toJSONSchema(IdeasResult) as Record<string, unknown>;
+delete IDEAS_JSON_SCHEMA.$schema;
 
 const cache = new Map<string, { at: number; value: IdeasResponse }>();
 const inFlight = new Map<string, Promise<IdeasResponse>>();

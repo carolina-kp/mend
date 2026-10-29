@@ -1,34 +1,45 @@
 "use client";
 // The whole thing: on a laptop it's the presentation website (intro, live phone,
 // screen navigator, component sheet); on a phone CSS hides everything but the app.
-// All state lives here and is kept in memory only — nothing is saved.
+// Answers live in memory only. Feedback and choices are sent to /api/feedback.
 import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
-import { getIdeas } from "@/lib/api";
-import { SAMPLE_IDEAS } from "@/lib/demo";
-import type { Idea } from "@/lib/schema";
+import { getIdeas, sendEvent, sessionId } from "@/lib/api";
+import { pickFallbackIdeas } from "@/lib/fallbackIdeas";
+import type { IdeasResponse } from "@/lib/schema";
 import { ComponentSheet } from "./ComponentSheet";
 import { EMPTY_ANSWERS, SCREENS, isComplete, type Answers, type ScreenId } from "./flow";
 import { FabricChoiceScreen, FabricMixScreen } from "./screens/FabricScreens";
-import { FeedbackScreen, LoadingScreen, ResultsScreen, ServiceScreen } from "./screens/ResultScreens";
+import { DetailScreen, FeedbackScreen, LoadingScreen, MadeScreen, MakeScreen, ResultsScreen } from "./screens/ResultScreens";
 import { GarmentScreen, PhotoScreen, SkillScreen, ToolsScreen } from "./screens/StepScreens";
 import { Icon } from "./ui";
 
 const num = (i: number) => String(i + 1).padStart(2, "0");
+
+// Shown when someone jumps past the questions from the presentation navigator.
+const PREVIEW_ANSWERS: Answers = { garment: "jeans", parts: [{ fibre: "cotton", percent: 100 }], tools: ["scissors", "hand_sewing"], skill: "beginner" };
+const PREVIEW_RESULT: IdeasResponse = {
+  ideas: pickFallbackIdeas({ garment: "jeans", parts: PREVIEW_ANSWERS.parts, tools: PREVIEW_ANSWERS.tools, skill: "beginner" }),
+  source: "sample",
+  note: "Sample ideas for cotton jeans. Go through the steps to get your own.",
+};
 
 export function Studio() {
   const [screen, setScreen] = useState<ScreenId>("garment");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [a, setA] = useState<Answers>(EMPTY_ANSWERS);
   const [fromLabel, setFromLabel] = useState(false);
-  const [ideas, setIdeas] = useState<Idea[]>();
-  const [error, setError] = useState<string>();
+  const [result, setResult] = useState<IdeasResponse>();
+  const [chosen, setChosen] = useState(0);
+  const [opened, setOpened] = useState(false); // did they look at an idea before rating?
   const [attempt, setAttempt] = useState(0);
-  const [chosenIdea, setChosenIdea] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const set = (patch: Partial<Answers>) => setA((prev) => ({ ...prev, ...patch }));
   const index = SCREENS.findIndex((s) => s.id === screen);
+  const shownAnswers = isComplete(a) ? a : PREVIEW_ANSWERS;
+  const shown = result ?? PREVIEW_RESULT;
+  const idea = shown.ideas[chosen] ?? shown.ideas[0];
 
   function go(next: ScreenId) {
     setScreen(next);
@@ -37,33 +48,52 @@ export function Studio() {
   }
   function previous() {
     if (screen === "sheet") go("garment");
-    else if (screen === "service" || screen === "feedback") go("results");
+    else if (screen === "detail" || screen === "feedback") go("results");
+    else if (screen === "make" || screen === "made") go("detail");
+    else if (screen === "results") go("skill");
     else if (index > 0) go(SCREENS[index - 1].id);
   }
   function findIdeas() {
-    setIdeas(undefined);
-    setError(undefined);
+    setResult(undefined);
+    setChosen(0);
+    setOpened(false);
     setAttempt((n) => n + 1);
     go("loading");
   }
+  function reset() {
+    setA(EMPTY_ANSWERS);
+    setResult(undefined);
+    setChosen(0);
+    setOpened(false);
+    setFromLabel(false);
+    sessionId(true);
+    go("garment");
+  }
+  // What every stored event carries: anonymous session, answers and the ideas shown. Never the photo.
+  const context = () => ({
+    sessionId: sessionId(),
+    garment: shownAnswers.garment,
+    parts: shownAnswers.parts,
+    tools: shownAnswers.tools,
+    skill: shownAnswers.skill,
+    source: shown.source,
+    ideas: shown.ideas.map((i) => i.title),
+  });
 
-  // Loading screen: ask the AI. If someone jumped here from the navigator without
-  // answering, show sample ideas after a short pause instead (presentation mode).
+  // Loading screen: ask for ideas. If someone jumped here from the navigator without
+  // answering, show the sample set after a short pause instead (presentation mode).
   useEffect(() => {
-    if (screen !== "loading" || ideas || error) return;
+    if (screen !== "loading" || result) return;
     if (!isComplete(a)) {
-      const t = setTimeout(() => go("results"), 4000);
+      const t = setTimeout(() => go("results"), 3000);
       return () => clearTimeout(t);
     }
     let cancelled = false;
-    const { garment, garmentImage, fabric, composition, tools, skill } = a;
-    getIdeas({ garment: garment!, garmentImage, fabric: fabric!, composition, tools, skill: skill! })
-      .then((r) => {
-        if (cancelled) return;
-        setIdeas(r.ideas);
-        go("results");
-      })
-      .catch((e: Error) => !cancelled && setError(e.message));
+    getIdeas({ garment: a.garment!, parts: a.parts.filter((p) => p.percent > 0), tools: a.tools, skill: a.skill!, garmentImage: a.garmentImage }).then((r) => {
+      if (cancelled) return;
+      setResult(r);
+      go("results");
+    });
     return () => {
       cancelled = true;
     };
@@ -80,13 +110,22 @@ export function Studio() {
     fabric: <FabricMixScreen {...props} fromLabel={fromLabel} next={() => go("tools")} />,
     tools: <ToolsScreen {...props} next={() => go("skill")} />,
     skill: <SkillScreen {...props} next={findIdeas} />,
-    loading: <LoadingScreen error={error} onRetry={findIdeas} />,
-    results: (
-      <ResultsScreen a={a} ideas={ideas ?? SAMPLE_IDEAS} sample={!ideas}
-        onService={(idea) => (setChosenIdea(idea), go("service"))} onFeedback={() => go("feedback")} />
+    loading: <LoadingScreen />,
+    results: <ResultsScreen a={shownAnswers} result={shown} onOpen={(i) => (setChosen(i), setOpened(true), go("detail"))} onFeedback={() => go("feedback")} />,
+    detail: (
+      <DetailScreen idea={idea} index={chosen}
+        onMake={() => (sendEvent({ type: "choice", choice: "make", idea: idea.title, ...context() }), go("make"))}
+        onMade={() => go("made")} />
     ),
-    service: <ServiceScreen key={chosenIdea} a={a} idea={chosenIdea || (ideas ?? SAMPLE_IDEAS)[0].name} onBack={() => go("results")} />,
-    feedback: <FeedbackScreen a={a} onBack={() => go("results")} />,
+    make: <MakeScreen key={idea.id} idea={idea} onFeedback={() => go("feedback")} />,
+    made: (
+      <MadeScreen key={idea.id} a={shownAnswers} idea={idea} onFeedback={() => go("feedback")}
+        onRequest={(d) => sendEvent({ type: "choice", choice: "get_it_made", idea: idea.title, ...d, ...context() })} />
+    ),
+    feedback: (
+      <FeedbackScreen key={attempt} onRestart={reset}
+        onSend={(f) => sendEvent({ type: "feedback", ...f, chosenIdea: opened ? idea.title : undefined, ...context() })} />
+    ),
     sheet: <div className="screen-content in-phone-sheet"><ComponentSheet /></div>,
   }[screen];
 
@@ -120,9 +159,12 @@ export function Studio() {
               <div className="app-nav">
                 <button type="button" className="nav-back" onClick={previous} aria-label="Previous screen" disabled={screen === "garment"}><Icon name="back" size={19} /></button>
                 <span className="app-logo">{APP_NAME}<span>.</span></span>
-                <button type="button" className="nav-screen" onClick={() => setPickerOpen(true)} aria-label="Open screen navigator">
-                  {screen === "sheet" ? "KIT" : `${num(index)} / ${SCREENS.length}`} <span className="nav-dots">•••</span>
-                </button>
+                <span className="nav-right">
+                  {screen !== "garment" && <button type="button" className="nav-reset" onClick={reset}>Reset</button>}
+                  <button type="button" className="nav-screen" onClick={() => setPickerOpen(true)} aria-label="Open screen navigator">
+                    {screen === "sheet" ? "KIT" : `${num(index)} / ${SCREENS.length}`} <span className="nav-dots">•••</span>
+                  </button>
+                </span>
               </div>
               <div className="phone-scroll" ref={scrollRef} key={screen}>{content}</div>
 
@@ -144,7 +186,7 @@ export function Studio() {
         </div>
 
         <aside className="navigator-panel">
-          <div className="navigator-top"><span className="eyebrow">THE EXPERIENCE</span><span>10 SCREENS + KIT</span></div>
+          <div className="navigator-top"><span className="eyebrow">THE EXPERIENCE</span><span>{SCREENS.length} SCREENS + KIT</span></div>
           <h3>From forgotten<br />to <em>reimagined.</em></h3>
           <div className="navigator-list">
             {SCREENS.map((s, i) => (

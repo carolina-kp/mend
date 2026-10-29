@@ -1,5 +1,5 @@
 // Simple in-memory per-IP limiter. Resets when the server restarts and is per
-// server instance — good enough for a prototype. FUTURE: shared store if traffic grows.
+// server instance. Good enough for a prototype. FUTURE: shared store if traffic grows.
 import { RATE_LIMIT } from "./config";
 
 const hits = new Map<string, number[]>();

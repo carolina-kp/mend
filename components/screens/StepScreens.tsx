@@ -12,15 +12,20 @@ export function GarmentScreen({ a, set, next }: StepProps) {
   return (
     <div className="screen-content garment-screen">
       <SectionHeading eyebrow="01 / 05  ·  THE GARMENT" title="What do you want to rework?" />
+      <ol className="how-strip" aria-label="How it works in 3 steps">
+        <li><span>01</span>Photograph or pick the garment</li>
+        <li><span>02</span>Add the fabric and your tools</li>
+        <li><span>03</span>Get three fabric-aware ideas, then make it or get it made</li>
+      </ol>
       <div className="garment-hero">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/at-the-cutting-table.png" alt="A well-loved white shirt, scissors, measuring tape and pincushion on a wooden worktable" />
         <div className="image-caption"><span>AT THE CUTTING TABLE / 01</span></div>
       </div>
-      <div className="selection-label">CHOOSE ONE <span>01 — {String(GARMENTS.length).padStart(2, "0")}</span></div>
+      <div className="selection-label">CHOOSE ONE <span>{String(GARMENTS.length).padStart(2, "0")} GARMENTS</span></div>
       <div>
         {GARMENTS.map((g, i) => (
-          <button type="button" key={g.id} className={`garment-option ${a.garment === g.id ? "active" : ""}`} onClick={() => set({ garment: g.id })}>
+          <button type="button" key={g.id} className={`garment-option ${a.garment === g.id ? "active" : ""}`} onClick={() => set({ garment: g.id })} aria-pressed={a.garment === g.id}>
             <span className="garment-index">0{i + 1}</span>
             <span>{g.label}</span>
             <span className="garment-mark"><Icon name={a.garment === g.id ? "check" : "arrow"} size={17} /></span>
@@ -28,6 +33,7 @@ export function GarmentScreen({ a, set, next }: StepProps) {
         ))}
       </div>
       <Footer><PrimaryButton disabled={!a.garment} onClick={next}>Continue</PrimaryButton></Footer>
+      <p className="disclaimer">A student prototype. Ideas are AI suggestions, so test on a scrap first.</p>
     </div>
   );
 }
@@ -73,9 +79,9 @@ export function PhotoScreen({ a, set, next }: StepProps) {
       {error && <p className="inline-note">{error}</p>}
       <div className="privacy-note">
         <span className="privacy-symbol">i</span>
-        <p>Photos are sent to an AI to generate ideas and aren&apos;t stored. Don&apos;t include faces.</p>
+        <p>Optional. Your photo is sent once to the AI with your answers and is not saved. Don&apos;t include faces.</p>
       </div>
-      <Footer><PrimaryButton onClick={next}>Continue</PrimaryButton></Footer>
+      <Footer><PrimaryButton onClick={next}>{a.garmentImage ? "Continue" : "Skip the photo"}</PrimaryButton></Footer>
     </div>
   );
 }
