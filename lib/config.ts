@@ -13,7 +13,7 @@ export const GARMENTS = [
 
 export const TOOLS = [
   { id: "sewing_machine", label: "Sewing machine" },
-  { id: "hand_sewing", label: "Needle & thread" },
+  { id: "hand_sewing", label: "Needle and thread" },
   { id: "iron", label: "Iron" },
   { id: "fabric_glue", label: "Fabric glue" },
   { id: "scissors", label: "Scissors" },
@@ -24,8 +24,8 @@ export const TOOLS = [
 
 export const SKILLS = [
   { id: "beginner", label: "Beginner", hint: "I can cut, glue or hand-stitch." },
-  { id: "intermediate", label: "Intermediate", hint: "I can sew a straight seam." },
-  { id: "advanced", label: "Advanced", hint: "I can work from a pattern." },
+  { id: "comfortable", label: "Comfortable", hint: "I can sew a straight seam." },
+  { id: "confident", label: "Confident", hint: "I can work from a pattern." },
 ] as const;
 
 export type GarmentId = (typeof GARMENTS)[number]["id"];
