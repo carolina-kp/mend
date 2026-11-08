@@ -84,3 +84,12 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - Ratings per idea: feasible, creative, suits the fabric (1 to 5) and an "unsafe or damaging" box, plus a comment per set and a rater label (not a full name).
 - H1 metric on the lab page: share of ideas rated feasible (4 or 5) for mend. minus the chatbot's, against the 20 point target from the proposal. Also average score, unsafe counts, and a winner per rated run (higher average of all three scores).
 - "Export blind ratings CSV" gives one row per rated idea with the true mapping.
+
+## Quote request (H3)
+- "Request a quote" now posts the ready brief to `/api/quote`, which stores it in `quotes` without photos. The optional email goes in `quote_contacts`, a separate table, and is only shown in `/lab` so the team can reply (brief section 8).
+- Extra optional fields: "Wanted by" date and email. Spam guard: a hidden honeypot field (bots that fill it get a fake success and nothing is stored) and a per-IP rate limit.
+- Team email: through Resend's free tier only when `RESEND_API_KEY` and `QUOTE_NOTIFY_EMAIL` are set. Not set up, because it needs Carolina's own Resend account; requests are stored and listed in `/lab` either way. The notification never contains the requester's email.
+- After sending: "A mender will reply with a quote. For this demo we match jobs by hand.", an "Open your brief" link and an "Example quote (demo)" card from the mock mender Ida, with placeholder prices by difficulty (`lib/mockMenders.ts`).
+- `/brief/[id]` is the shareable brief (unguessable id, no photo, no contact detail) with a print or save as PDF button.
+- If the request fails, the screen says so calmly and keeps the form, so the brief can still be copied as text.
+- `/lab` shows H3: share of tester sessions that tapped "get it made" (target 15%) and that left an email (target 5%), plus a list of quote requests with links to each brief.

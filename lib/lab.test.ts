@@ -11,7 +11,7 @@ const events: StoredEvent[] = [
 
 describe("lab", () => {
   it("summarises ratings, would-try and choices", () => {
-    expect(summarise(events)).toEqual({ sessions: 2, feedbackCount: 2, averageRating: 3, averageRatingAi: 3, wouldTryPct: 50, makeCount: 0, getMadeCount: 1 });
+    expect(summarise(events)).toEqual({ sessions: 2, feedbackCount: 2, averageRating: 3, averageRatingAi: 3, wouldTryPct: 50, makeCount: 0, getMadeCount: 1, getMadePct: 50, contactPct: 0 });
   });
 
   it("exports CSV with escaped quotes and defused formulas", () => {

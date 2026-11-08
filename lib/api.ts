@@ -42,3 +42,13 @@ export function sessionId(reset = false): string {
     return "no-storage";
   }
 }
+
+// Sends the ready brief. Resolves to the brief id, or an error message the screen can show calmly.
+export async function requestQuote(body: Record<string, unknown>): Promise<{ id?: string; error?: string }> {
+  try {
+    const data = await post<{ id?: string }>("/api/quote", { sessionId: sessionId(), ...body });
+    return { id: data.id };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}

@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { GARMENTS, SKILLS } from "@/lib/config";
 import { fibreLabel } from "@/lib/fabricRules";
+import { demoQuote } from "@/lib/mockMenders";
 import type { Idea, IdeasResponse } from "@/lib/schema";
 import { ambition, formatMinutes, type Answers } from "../flow";
 import { Footer, Icon, PrimaryButton, SecondaryButton, SectionHeading, ThanksState } from "../ui";
@@ -138,7 +139,7 @@ export function MakeScreen({ idea, onFeedback }: { idea: Idea; onFeedback: () =>
   );
 }
 
-export function briefText(a: Answers, idea: Idea, notes: string, budget: string) {
+export function briefText(a: Answers, idea: Idea, notes: string, budget: string, date = "") {
   return [
     "mend. ready brief",
     `Garment: ${garmentLabel(a)}`,
@@ -150,31 +151,56 @@ export function briefText(a: Answers, idea: Idea, notes: string, budget: string)
     `For the mender: ${idea.menderBrief}`,
     ...(notes ? [`Notes: ${notes}`] : []),
     ...(budget ? [`Budget: ${budget} kr`] : []),
+    ...(date ? [`Wanted by: ${date}`] : []),
   ].join("\n");
 }
 
+export type QuoteDetails = { notes?: string; budget?: number; desiredDate?: string; email?: string; website?: string };
+
+export function DemoQuoteCard({ difficulty }: { difficulty: number }) {
+  const q = demoQuote(difficulty);
+  return (
+    <div className="demo-quote">
+      <span className="tiny-label">EXAMPLE QUOTE (DEMO)</span>
+      <div className="demo-quote-head">
+        <span className="avatar" aria-hidden>{q.mender.initials}</span>
+        <span><strong>{q.mender.name}, {q.mender.age}</strong><small>{q.mender.bio.split(".")[0]}.</small></span>
+      </div>
+      <p className="demo-quote-price">{q.range[0]} to {q.range[1]} kr <small>· ready in {q.days}</small></p>
+      <p className="demo-quote-note">A made-up quote so you can see the whole loop. Prices are placeholders, not real offers.</p>
+    </div>
+  );
+}
+
 export function MadeScreen({ a, idea, onRequest, onFeedback }: {
-  a: Answers; idea: Idea; onRequest: (details: { hasNotes: boolean; budget?: number }) => void; onFeedback: () => void;
+  a: Answers; idea: Idea; onRequest: (details: QuoteDetails) => Promise<{ id?: string; error?: string }>; onFeedback: () => void;
 }) {
   const [notes, setNotes] = useState("");
   const [budget, setBudget] = useState("");
+  const [date, setDate] = useState("");
+  const [email, setEmail] = useState("");
   const [copied, setCopied] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [state, setState] = useState<"form" | "sending" | "sent">("form");
+  const [briefId, setBriefId] = useState<string>();
+  const [error, setError] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(briefText(a, idea, notes, budget));
+      await navigator.clipboard.writeText(briefText(a, idea, notes, budget, date));
       setCopied(true);
     } catch {
       setCopied(false);
     }
   }
 
-  if (sent)
+  if (state === "sent")
     return (
       <div className="screen-content">
-        <SectionHeading eyebrow="GET IT MADE" title="Request sent." />
-        <ThanksState label="BRIEF RECEIVED" text="A mender will reply with a quote. For this demo we match jobs by hand." onBack={onFeedback} backLabel="Rate these ideas" />
+        <SectionHeading eyebrow="GET IT MADE" title="Request sent." description="A mender will reply with a quote. For this demo we match jobs by hand." />
+        {briefId && <a className="secondary-button brief-link" href={`/brief/${briefId}`} target="_blank" rel="noopener">Open your brief <Icon name="arrow" size={17} /></a>}
+        <DemoQuoteCard difficulty={idea.difficulty} />
+        <Footer><PrimaryButton onClick={onFeedback}>Rate these ideas</PrimaryButton></Footer>
       </div>
     );
 
@@ -195,19 +221,45 @@ export function MadeScreen({ a, idea, onRequest, onFeedback }: {
       </div>
       <form
         className="service-form"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          onRequest({ hasNotes: !!notes.trim(), budget: budget ? Number(budget) : undefined });
-          setSent(true);
+          setState("sending");
+          setError("");
+          const website = String(new FormData(e.currentTarget).get("website") ?? "");
+          const r = await onRequest({
+            notes: notes.trim() || undefined,
+            budget: budget ? Math.round(Number(budget)) : undefined,
+            desiredDate: date || undefined,
+            email: email.trim() || undefined,
+            website: website || undefined,
+          });
+          if (r.error) {
+            setError(r.error);
+            setState("form");
+          } else {
+            setBriefId(r.id);
+            setState("sent");
+          }
         }}
       >
         <label htmlFor="notes">NOTES FOR THE MENDER <span>OPTIONAL</span></label>
         <textarea id="notes" rows={3} maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Size, colour of thread, anything special" />
         <label htmlFor="budget">BUDGET IN KR <span>OPTIONAL</span></label>
         <input id="budget" type="number" inputMode="numeric" min={0} max={10000} value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="e.g. 200" />
+        <label htmlFor="date">WANTED BY <span>OPTIONAL</span></label>
+        <input id="date" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} />
+        <label htmlFor="email">EMAIL FOR THE QUOTE <span>OPTIONAL</span></label>
+        <input id="email" type="email" autoComplete="email" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" aria-describedby="email-note" />
+        <p id="email-note" className="field-note">Only used to reply with a quote. Kept apart from your brief.</p>
+        {/* Honeypot for bots: hidden from people and screen readers. */}
+        <div className="honeypot" aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
         <SecondaryButton onClick={copy}>{copied ? "Copied" : "Copy brief as text"} <Icon name={copied ? "check" : "label"} size={17} /></SecondaryButton>
-        <p>In this prototype menders are matched by hand. Your notes stay on this screen.</p>
-        <PrimaryButton type="submit">Request a quote</PrimaryButton>
+        <p>In this prototype menders are matched by hand. Your brief is saved without photos.</p>
+        {error && <p className="inline-note" role="alert">{error}</p>}
+        <PrimaryButton type="submit" disabled={state === "sending"}>{state === "sending" ? "Sending…" : "Request a quote"}</PrimaryButton>
       </form>
     </div>
   );

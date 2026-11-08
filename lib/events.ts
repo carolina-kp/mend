@@ -29,6 +29,7 @@ export const AppEvent = z.discriminatedUnion("type", [
     choice: z.enum(["make", "get_it_made"]),
     idea: z.string().max(80),
     hasNotes: z.boolean().optional(),
+    hasEmail: z.boolean().optional(), // left contact details on the quote request (H3)
     budget: z.number().min(0).max(10000).optional(),
   }),
 ]);

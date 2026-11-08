@@ -437,3 +437,21 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .lab-comment { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; margin-top: 10px; }
 .lab-submit { display: grid; gap: 12px; max-width: 460px; margin-top: 22px; }
 .lab-submit label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; }
+
+/* Get it made: quote request */
+.service-form input[type="date"] { height: 50px; margin-bottom: 26px; }
+.field-note { margin: -18px 0 22px !important; }
+.honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.brief-link { margin-top: 22px; text-decoration: none; }
+.demo-quote { margin-top: 22px; border: 1px dashed var(--accent); background: var(--white); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.demo-quote .tiny-label { color: var(--accent); }
+.demo-quote-head { display: flex; gap: 12px; align-items: center; }
+.demo-quote-head > span:last-child { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.demo-quote-head small { color: var(--muted); font-size: 11px; }
+.avatar { flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--wash); border: 1px solid var(--line); display: grid; place-items: center; font: 500 19px var(--serif); color: var(--accent); }
+.demo-quote-price { font: 500 24px var(--serif); margin: 0; }
+.demo-quote-price small { font: 12px var(--sans); color: var(--muted); }
+.demo-quote-note { font-size: 11px; color: var(--muted); margin: 0; }
+.brief-page .brief-card { margin-bottom: 18px; }
+.brief-page .brief-card .tiny-label { margin-top: 8px; }
+@media print { .no-print { display: none !important; } body, .brief-card { background: #fff; } }

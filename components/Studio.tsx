@@ -4,7 +4,7 @@
 // Answers live in memory only. Feedback and choices are sent to /api/feedback.
 import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
-import { getIdeas, sendEvent, sessionId } from "@/lib/api";
+import { getIdeas, requestQuote, sendEvent, sessionId } from "@/lib/api";
 import { SAMPLE_GARMENTS, type SampleGarment } from "@/lib/sampleGarments";
 import type { IdeasResponse } from "@/lib/schema";
 import { ComponentSheet } from "./ComponentSheet";
@@ -131,7 +131,12 @@ export function Studio() {
     make: <MakeScreen key={idea.id} idea={idea} onFeedback={() => go("feedback")} />,
     made: (
       <MadeScreen key={idea.id} a={shownAnswers} idea={idea} onFeedback={() => go("feedback")}
-        onRequest={(d) => sendEvent({ type: "choice", choice: "get_it_made", idea: idea.title, ...d, ...context() })} />
+        onRequest={(d) => {
+          sendEvent({ type: "choice", choice: "get_it_made", idea: idea.title, hasNotes: !!d.notes, hasEmail: !!d.email, budget: d.budget, ...context() });
+          const { garment, parts } = shownAnswers;
+          const { id, title, steps, difficulty, timeMinutes, menderBrief } = idea;
+          return requestQuote({ garment, parts, idea: { id, title, steps, difficulty, timeMinutes, menderBrief }, ...d });
+        }} />
     ),
     feedback: (
       <FeedbackScreen key={attempt} onRestart={reset}

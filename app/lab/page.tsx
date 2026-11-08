@@ -2,7 +2,7 @@
 // feedback (H2, H3), the test log and CSV exports.
 import type { Metadata } from "next";
 import { winner } from "@/lib/compare";
-import { eventRow, isLabUser, labEnabled, loadComparisons, summarise } from "@/lib/lab";
+import { eventRow, isLabUser, labEnabled, loadComparisons, loadQuotes, summarise, type QuoteRow } from "@/lib/lab";
 import { listEvents, storeName, type StoredEvent } from "@/lib/store";
 import { login, logout } from "./actions";
 import { CompareForm } from "./CompareForm";
@@ -38,9 +38,10 @@ export default async function LabPage({ searchParams }: PageProps<"/lab">) {
 
   let events: StoredEvent[] = [];
   let comparisons: Awaited<ReturnType<typeof loadComparisons>> | undefined;
+  let quotes: QuoteRow[] = [];
   let error = "";
   try {
-    [events, comparisons] = await Promise.all([listEvents(), loadComparisons()]);
+    [events, comparisons, quotes] = await Promise.all([listEvents(), loadComparisons(), loadQuotes()]);
   } catch (e) {
     error = (e as Error).message;
   }
@@ -94,6 +95,29 @@ export default async function LabPage({ searchParams }: PageProps<"/lab">) {
       <div className="lab-actions">
         <a className="secondary-button" href="/api/lab/export?kind=ratings" download>Export blind ratings CSV <span aria-hidden>↓</span></a>
       </div>
+
+      <h2>H3: get it made</h2>
+      <section className="lab-summary" aria-label="Get it made summary">
+        <div><span className="tiny-label">TAPPED GET IT MADE</span><strong>{s.getMadePct}%</strong><small>Target: at least 15% of testers</small></div>
+        <div><span className="tiny-label">LEFT AN EMAIL</span><strong>{s.contactPct}%</strong><small>Target: at least 5% of testers</small></div>
+        <div><span className="tiny-label">QUOTE REQUESTS</span><strong>{quotes.length}</strong></div>
+      </section>
+      {quotes.length > 0 && (
+        <div className="lab-table-wrap">
+          <table className="lab-table">
+            <thead><tr><th>When</th><th>Garment</th><th>Fabric</th><th>Idea</th><th>Budget</th><th>Wanted by</th><th>Email</th><th>Notes</th><th></th></tr></thead>
+            <tbody>
+              {quotes.map((q) => (
+                <tr key={q.id}>
+                  <td>{q.created_at.slice(0, 16).replace("T", " ")}</td><td>{q.garment}</td><td>{q.parts.map((p) => `${p.percent}% ${p.fibre}`).join(", ")}</td>
+                  <td>{q.idea.title} ({q.idea.difficulty}/5)</td><td>{q.budget != null ? `${q.budget} kr` : ""}</td><td>{q.desired_date ?? ""}</td>
+                  <td>{q.email ? <a href={`mailto:${q.email}`}>{q.email}</a> : ""}</td><td>{q.notes ?? ""}</td><td><a href={`/brief/${q.id}`}>Brief</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <h2>Tester feedback</h2>
       <section className="lab-summary" aria-label="Summary">

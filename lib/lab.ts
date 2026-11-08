@@ -56,6 +56,8 @@ const cell = (v: string) => `"${(/^[=+\-@\t\r]/.test(v) ? `'${v}` : v).replace(/
 export const toCsv = (events: StoredEvent[]) =>
   [CSV_COLUMNS.join(","), ...events.map((e) => CSV_COLUMNS.map((k) => cell(eventRow(e)[k])).join(","))].join("\r\n") + "\r\n";
 
+const sessionCount = (events: StoredEvent[]) => new Set(events.map((e) => e.sessionId)).size;
+
 export function summarise(events: StoredEvent[]) {
   const feedback = events.filter((e) => e.type === "feedback");
   const choices = events.filter((e) => e.type === "choice");
@@ -69,6 +71,9 @@ export function summarise(events: StoredEvent[]) {
     wouldTryPct: pct(feedback.filter((e) => e.wouldTry).length, feedback.length),
     makeCount: choices.filter((e) => e.choice === "make").length,
     getMadeCount: choices.filter((e) => e.choice === "get_it_made").length,
+    // H3: share of tester sessions that tapped "get it made", and that left an email for a quote.
+    getMadePct: pct(new Set(choices.filter((e) => e.choice === "get_it_made").map((e) => e.sessionId)).size, sessionCount(events)),
+    contactPct: pct(new Set(choices.filter((e) => e.choice === "get_it_made" && e.hasEmail).map((e) => e.sessionId)).size, sessionCount(events)),
   };
 }
 
@@ -115,4 +120,14 @@ export function ratingsCsv(pairs: { run: LabRun; rating: LabRating }[]) {
     }),
   );
   return [RATING_COLUMNS.join(","), ...rows].join("\r\n") + "\r\n";
+}
+
+// ---------- Quote requests ----------
+
+export type QuoteRow = { id: string; created_at: string; garment: string; parts: { fibre: string; percent: number }[]; idea: { title: string; difficulty: number }; budget?: number | null; desired_date?: string | null; notes?: string | null; email?: string };
+
+export async function loadQuotes(): Promise<QuoteRow[]> {
+  const [quotes, contacts] = await Promise.all([listRows("quotes", { limit: 500 }), listRows("quote_contacts", { limit: 500 })]);
+  const email = new Map(contacts.map((c) => [String(c.quote_id), String(c.email)]));
+  return (quotes as QuoteRow[]).map((q) => ({ ...q, email: email.get(q.id) }));
 }
