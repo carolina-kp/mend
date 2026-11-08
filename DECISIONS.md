@@ -99,3 +99,9 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - The page asks: did you make something (yes or not yet), which idea (the three the person saw, found by the code, plus "Something else") and what happened. The answer is stored as a `followup` event. No login, no contact details.
 - `/lab` trial tracking: one row per tester with feedback, the follow-up link, a "Mark sent" toggle and "made something", taken from the tester's answer or set by hand (yes, no, unknown) when the answer came another way. Stored in `trials`.
 - H2 on the lab page: share of testers with feedback who made something, against the 25% target. The feedback CSV gains `has_email` and `made` columns.
+
+## Concept mock-ups (Phase 2)
+- `/mock/menders` (browse), `/mock/menders/[id]` (profile) and `/mock/community` (feed), with tabs between them. Every screen shows the "Concept mock-up, not live" badge in the top bar, from one shared layout.
+- Static seed data in `lib/mockMenders.ts` (invented people: Ida, Malik, Sofie; four community posts). Prices are labelled placeholders. No accounts, following, posting or messaging; "Ask for a quote" on a profile is disabled with a note that the prototype matches jobs by hand.
+- Past projects are shown as fabric-coloured swatch tiles rather than photos, so there is no stock imagery to license and nothing looks like a real person's work.
+- Links in: a small line under the landing disclaimer, and "See Ida's profile" on the demo quote card. Both open in a new tab so the main flow is not lost.

@@ -58,6 +58,7 @@ export function GarmentScreen({ a, set, next, onSample }: StepProps & { onSample
       </div>
       <Footer><PrimaryButton disabled={!a.garment} onClick={next}>Continue</PrimaryButton></Footer>
       <p className="disclaimer">A student prototype. Ideas are AI suggestions, so test on a scrap first.</p>
+      <a className="concept-link" href="/mock/menders" target="_blank" rel="noopener">Coming later: menders and community (concept mock-up)</a>
     </div>
   );
 }

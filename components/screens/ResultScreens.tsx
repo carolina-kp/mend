@@ -168,6 +168,7 @@ export function DemoQuoteCard({ difficulty }: { difficulty: number }) {
       </div>
       <p className="demo-quote-price">{q.range[0]} to {q.range[1]} kr <small>· ready in {q.days}</small></p>
       <p className="demo-quote-note">A made-up quote so you can see the whole loop. Prices are placeholders, not real offers.</p>
+      <a className="concept-link" href={`/mock/menders/${q.mender.id}`} target="_blank" rel="noopener">See {q.mender.name}&apos;s profile (concept mock-up)</a>
     </div>
   );
 }
