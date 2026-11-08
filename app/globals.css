@@ -455,3 +455,16 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .brief-page .brief-card { margin-bottom: 18px; }
 .brief-page .brief-card .tiny-label { margin-top: 8px; }
 @media print { .no-print { display: none !important; } body, .brief-card { background: #fff; } }
+
+/* Follow-up */
+.standalone { min-height: 100dvh; max-width: 480px; margin: 0 auto; background: var(--paper); }
+.standalone-nav { justify-content: center; }
+.standalone-nav .app-logo { text-decoration: none; color: var(--ink); }
+.followup-link { margin-top: 26px; border: 1px dashed #aba99c; background: #eeece4; padding: 14px 16px; }
+.followup-link .tiny-label { color: var(--accent); }
+.followup-link p { font-size: 12px; line-height: 1.5; margin: 6px 0 10px; color: #5b6159; }
+.followup-link button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid var(--ink); background: var(--white); padding: 10px 12px; font-size: 12px; font-weight: 700; }
+.followup-link code { font-size: 12px; overflow-wrap: anywhere; text-align: left; }
+.lab-toggle { border: 1px solid #c6c6bc; background: transparent; padding: 4px 9px; font-size: 11px; font-weight: 700; }
+.lab-toggle[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.lab-made { display: flex; gap: 4px; }

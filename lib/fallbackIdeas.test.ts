@@ -45,7 +45,8 @@ describe("fallback bank", () => {
 
   it("acrylic sweater sample never involves heat", () => {
     const ideas = pickFallbackIdeas({ garment: "sweater", parts: [{ fibre: "acrylic", percent: 100 }], tools: ["iron", "hand_sewing"], skill: "beginner" });
-    const text = JSON.stringify(ideas.map(({ warnings, fabricReason, ...rest }) => rest)).toLowerCase();
+    // Only what people are told to do: warnings and reasons may mention the iron to warn against it.
+    const text = JSON.stringify(ideas.map((i) => [i.title, i.summary, i.tools, i.materials, i.steps])).toLowerCase();
     expect(text).not.toMatch(/iron/);
   });
 

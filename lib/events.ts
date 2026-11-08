@@ -25,6 +25,12 @@ export const AppEvent = z.discriminatedUnion("type", [
     chosenIdea: z.string().max(80).optional(),
   }),
   Context.extend({
+    type: z.literal("followup"), // the one-week "Did you make it?" page
+    made: z.boolean(),
+    idea: z.string().max(80).optional(),
+    story: z.string().max(1000).optional(),
+  }),
+  Context.extend({
     type: z.literal("choice"),
     choice: z.enum(["make", "get_it_made"]),
     idea: z.string().max(80),

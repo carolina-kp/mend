@@ -93,3 +93,9 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - `/brief/[id]` is the shareable brief (unguessable id, no photo, no contact detail) with a print or save as PDF button.
 - If the request fails, the screen says so calmly and keeps the form, so the brief can still be copied as text.
 - `/lab` shows H3: share of tester sessions that tapped "get it made" (target 15%) and that left an email (target 5%), plus a list of quote requests with links to each brief.
+
+## Follow-up and trial tracking (H2)
+- The short link is `/f/<code>`, where the code is the first 8 characters of the tester's anonymous session id. It is shown on the feedback thank-you screen with a copy button, and listed per tester in `/lab` so it can be sent after a week. Plain `/f` works too.
+- The page asks: did you make something (yes or not yet), which idea (the three the person saw, found by the code, plus "Something else") and what happened. The answer is stored as a `followup` event. No login, no contact details.
+- `/lab` trial tracking: one row per tester with feedback, the follow-up link, a "Mark sent" toggle and "made something", taken from the tester's answer or set by hand (yes, no, unknown) when the answer came another way. Stored in `trials`.
+- H2 on the lab page: share of testers with feedback who made something, against the 25% target. The feedback CSV gains `has_email` and `made` columns.

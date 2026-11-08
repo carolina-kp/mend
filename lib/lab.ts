@@ -23,11 +23,12 @@ export async function isLabUser(): Promise<boolean> {
 
 const parts = (e: StoredEvent) => (e.parts ?? []).map((p) => `${p.percent}% ${p.fibre}`).join(", ");
 
-export const CSV_COLUMNS = ["at", "type", "session_id", "sample", "garment", "fabric", "tools", "skill", "source", "ideas_shown", "rating", "would_try", "chosen_idea", "choice", "idea", "has_notes", "budget", "comment"] as const;
+export const CSV_COLUMNS = ["at", "type", "session_id", "sample", "garment", "fabric", "tools", "skill", "source", "ideas_shown", "rating", "would_try", "chosen_idea", "choice", "idea", "has_notes", "has_email", "budget", "made", "comment"] as const;
 
 export function eventRow(e: StoredEvent): Record<(typeof CSV_COLUMNS)[number], string> {
   const f = e.type === "feedback" ? e : undefined;
   const c = e.type === "choice" ? e : undefined;
+  const fu = e.type === "followup" ? e : undefined;
   return {
     at: e.at,
     type: e.type,
@@ -43,10 +44,12 @@ export function eventRow(e: StoredEvent): Record<(typeof CSV_COLUMNS)[number], s
     would_try: f ? (f.wouldTry ? "yes" : "no") : "",
     chosen_idea: f?.chosenIdea ?? "",
     choice: c?.choice ?? "",
-    idea: c?.idea ?? "",
+    idea: c?.idea ?? fu?.idea ?? "",
     has_notes: c?.hasNotes === undefined ? "" : c.hasNotes ? "yes" : "no",
+    has_email: c?.hasEmail === undefined ? "" : c.hasEmail ? "yes" : "no",
     budget: c?.budget === undefined ? "" : String(c.budget),
-    comment: f?.comment ?? "",
+    made: fu ? (fu.made ? "yes" : "no") : "",
+    comment: f?.comment ?? fu?.story ?? "",
   };
 }
 
@@ -130,4 +133,49 @@ export async function loadQuotes(): Promise<QuoteRow[]> {
   const [quotes, contacts] = await Promise.all([listRows("quotes", { limit: 500 }), listRows("quote_contacts", { limit: 500 })]);
   const email = new Map(contacts.map((c) => [String(c.quote_id), String(c.email)]));
   return (quotes as QuoteRow[]).map((q) => ({ ...q, email: email.get(q.id) }));
+}
+
+// ---------- Trial tracking (H2) ----------
+
+export type Trial = {
+  sessionId: string;
+  code: string; // first 8 characters, used in the follow-up link
+  at: string;
+  rating?: number;
+  wouldTry?: boolean;
+  followupSent: boolean;
+  made?: boolean; // from the follow-up answer, or set by hand in the lab
+  madeBy?: "tester" | "lab";
+  ideaMade?: string;
+  story?: string;
+};
+
+export async function loadTrials(events: StoredEvent[]): Promise<{ trials: Trial[]; madePct: number }> {
+  const marks = new Map((await listRows("trials")).map((t) => [String(t.session_id), t]));
+  const followups = events.filter((e) => e.type === "followup");
+  const trials = events
+    .filter((e) => e.type === "feedback")
+    .map((f) => {
+      const code = f.sessionId.slice(0, 8);
+      // Follow-ups match on the full session id, or on the code when the session was not found.
+      const answer = followups.find((e) => e.sessionId === f.sessionId || e.sessionId === `followup-${code}`);
+      const mark = marks.get(f.sessionId);
+      const lab = typeof mark?.made === "boolean" ? mark.made : undefined;
+      return {
+        sessionId: f.sessionId,
+        code,
+        at: f.at,
+        rating: f.type === "feedback" ? f.rating : undefined,
+        wouldTry: f.type === "feedback" ? f.wouldTry : undefined,
+        followupSent: mark?.followup_sent === true,
+        made: answer?.type === "followup" ? answer.made : lab,
+        madeBy: answer ? ("tester" as const) : lab !== undefined ? ("lab" as const) : undefined,
+        ideaMade: answer?.type === "followup" ? answer.idea : undefined,
+        story: answer?.type === "followup" ? answer.story : undefined,
+      };
+    })
+    // One row per tester: the most recent feedback wins.
+    .filter((t, i, all) => all.findIndex((x) => x.sessionId === t.sessionId) === i);
+  const madePct = trials.length ? Math.round((trials.filter((t) => t.made).length / trials.length) * 100) : 0;
+  return { trials, madePct };
 }

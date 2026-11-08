@@ -139,7 +139,7 @@ export function Studio() {
         }} />
     ),
     feedback: (
-      <FeedbackScreen key={attempt} onRestart={reset}
+      <FeedbackScreen key={attempt} onRestart={reset} followupCode={sessionId().slice(0, 8)}
         onSend={(f) => sendEvent({ type: "feedback", ...f, chosenIdea: opened ? idea.title : undefined, ...context() })} />
     ),
     sheet: <div className="screen-content in-phone-sheet"><ComponentSheet /></div>,

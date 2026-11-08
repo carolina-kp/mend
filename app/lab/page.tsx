@@ -2,9 +2,9 @@
 // feedback (H2, H3), the test log and CSV exports.
 import type { Metadata } from "next";
 import { winner } from "@/lib/compare";
-import { eventRow, isLabUser, labEnabled, loadComparisons, loadQuotes, summarise, type QuoteRow } from "@/lib/lab";
+import { eventRow, isLabUser, labEnabled, loadComparisons, loadQuotes, loadTrials, summarise, type QuoteRow } from "@/lib/lab";
 import { listEvents, storeName, type StoredEvent } from "@/lib/store";
-import { login, logout } from "./actions";
+import { login, logout, setTrial } from "./actions";
 import { CompareForm } from "./CompareForm";
 import { Shell } from "./Shell";
 
@@ -39,9 +39,11 @@ export default async function LabPage({ searchParams }: PageProps<"/lab">) {
   let events: StoredEvent[] = [];
   let comparisons: Awaited<ReturnType<typeof loadComparisons>> | undefined;
   let quotes: QuoteRow[] = [];
+  let trialData: Awaited<ReturnType<typeof loadTrials>> = { trials: [], madePct: 0 };
   let error = "";
   try {
     [events, comparisons, quotes] = await Promise.all([listEvents(), loadComparisons(), loadQuotes()]);
+    trialData = await loadTrials(events);
   } catch (e) {
     error = (e as Error).message;
   }
@@ -127,7 +129,49 @@ export default async function LabPage({ searchParams }: PageProps<"/lab">) {
         <div><span className="tiny-label">WOULD TRY ONE</span><strong>{s.wouldTryPct}%</strong></div>
         <div><span className="tiny-label">MAKE IT / GET IT MADE</span><strong>{s.makeCount} / {s.getMadeCount}</strong></div>
       </section>
-      <p className="lab-target">Target: at least 25% tried an idea. &quot;Tried&quot; is measured by the one-week follow-up (second pass); until then, &quot;would try one&quot; is the closest signal.</p>
+      <h3 className="lab-h3">H2: trial tracking</h3>
+      <section className="lab-summary" aria-label="Trial summary">
+        <div><span className="tiny-label">MADE SOMETHING</span><strong>{trialData.madePct}%</strong><small>of {trialData.trials.length} testers with feedback</small></div>
+        <div><span className="tiny-label">FOLLOW-UPS SENT</span><strong>{trialData.trials.filter((t) => t.followupSent).length}</strong></div>
+        <div><span className="tiny-label">FOLLOW-UPS ANSWERED</span><strong>{trialData.trials.filter((t) => t.madeBy === "tester").length}</strong></div>
+      </section>
+      <p className="lab-target">Target: at least 25% tried an idea. {trialData.madePct >= 25 ? "Met so far." : "Not met yet."}</p>
+      {trialData.trials.length > 0 && (
+        <div className="lab-table-wrap">
+          <table className="lab-table">
+            <thead><tr><th>Tested</th><th>Follow-up link</th><th>Rating</th><th>Would try</th><th>Follow-up sent</th><th>Made something</th><th>What happened</th></tr></thead>
+            <tbody>
+              {trialData.trials.map((t) => (
+                <tr key={t.sessionId}>
+                  <td>{t.at.slice(0, 10)}</td>
+                  <td><code>/f/{t.code}</code></td>
+                  <td>{t.rating ?? ""}</td><td>{t.wouldTry === undefined ? "" : t.wouldTry ? "yes" : "no"}</td>
+                  <td>
+                    <form action={setTrial}>
+                      <input type="hidden" name="sessionId" value={t.sessionId} /><input type="hidden" name="field" value="followup_sent" />
+                      <input type="hidden" name="value" value={t.followupSent ? "false" : "true"} />
+                      <button type="submit" className="lab-toggle" aria-pressed={t.followupSent}>{t.followupSent ? "Sent" : "Mark sent"}</button>
+                    </form>
+                  </td>
+                  <td>
+                    {t.madeBy === "tester" ? (
+                      <b>{t.made ? "yes" : "no"}</b>
+                    ) : (
+                      <form action={setTrial} className="lab-made">
+                        <input type="hidden" name="sessionId" value={t.sessionId} /><input type="hidden" name="field" value="made" />
+                        {(["true", "false", "clear"] as const).map((v) => (
+                          <button key={v} type="submit" name="value" value={v} className="lab-toggle" aria-pressed={v !== "clear" && String(t.made) === v}>{v === "true" ? "Yes" : v === "false" ? "No" : "?"}</button>
+                        ))}
+                      </form>
+                    )}
+                  </td>
+                  <td>{[t.ideaMade, t.story].filter(Boolean).join(": ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="lab-actions">
         <a className="secondary-button" href="/api/lab/export" download>Export feedback CSV <span aria-hidden>↓</span></a>

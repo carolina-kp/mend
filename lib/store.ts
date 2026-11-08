@@ -72,17 +72,22 @@ export async function upsertRow(table: Table, key: string, row: Row): Promise<vo
 }
 
 // Newest first. `eq` filters on exact column values (used to fetch one run, one quote, one session).
-export async function listRows(table: Table, { eq = {}, limit = 5000 }: { eq?: Record<string, string>; limit?: number } = {}): Promise<Row[]> {
+// `prefix` matches the start of one column (follow-up links carry the first 8 characters of a session id).
+export async function listRows(
+  table: Table,
+  { eq = {}, prefix, limit = 5000 }: { eq?: Record<string, string>; prefix?: [string, string]; limit?: number } = {},
+): Promise<Row[]> {
   const db = supabase(table);
   if (!db) {
     return (await readLocal(table))
       .filter((r) => Object.entries(eq).every(([k, v]) => String(r[k]) === v))
+      .filter((r) => !prefix || String(r[prefix[0]] ?? "").startsWith(prefix[1]))
       .reverse()
       .slice(0, limit);
   }
   const filters = Object.entries(eq)
     .map(([k, v]) => `&${encodeURIComponent(k)}=eq.${encodeURIComponent(v)}`)
-    .join("");
+    .join("") + (prefix ? `&${encodeURIComponent(prefix[0])}=like.${encodeURIComponent(prefix[1].replace(/[%_*]/g, ""))}*` : "");
   const res = await check(await fetch(`${db.url}?select=*${filters}&order=created_at.desc&limit=${limit}`, { headers: db.headers, cache: "no-store", signal: AbortSignal.timeout(8000) }));
   return (await res.json()) as Row[];
 }
@@ -108,13 +113,13 @@ export async function saveEvent(e: AppEvent): Promise<void> {
   });
 }
 
-export async function listEvents(limit = 5000): Promise<StoredEvent[]> {
-  const rows = await listRows("events", { limit });
-  return rows.map((r) => {
-    // Older local rows were stored flat, before the table shape existed.
-    if (!("data" in r)) return r as unknown as StoredEvent;
-    const data = (r.data ?? {}) as Row;
-    const opt = (v: unknown) => (v ?? undefined) as string | undefined;
-    return { at: r.created_at, type: r.type, sessionId: r.session_id, garment: opt(r.garment), skill: opt(r.skill), source: opt(r.source), sample: opt(r.sample), ...data } as StoredEvent;
-  });
+// A stored events row back into the event shape the app uses.
+export function toEvent(r: Row): StoredEvent {
+  // Older local rows were stored flat, before the table shape existed.
+  if (!("data" in r)) return r as unknown as StoredEvent;
+  const data = (r.data ?? {}) as Row;
+  const opt = (v: unknown) => (v ?? undefined) as string | undefined;
+  return { at: r.created_at, type: r.type, sessionId: r.session_id, garment: opt(r.garment), skill: opt(r.skill), source: opt(r.source), sample: opt(r.sample), ...data } as StoredEvent;
 }
+
+export const listEvents = async (limit = 5000) => (await listRows("events", { limit })).map(toEvent);

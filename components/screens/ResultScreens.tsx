@@ -265,8 +265,8 @@ export function MadeScreen({ a, idea, onRequest, onFeedback }: {
   );
 }
 
-export function FeedbackScreen({ onSend, onRestart }: {
-  onSend: (f: { rating: number; wouldTry: boolean; comment?: string }) => void; onRestart: () => void;
+export function FeedbackScreen({ onSend, onRestart, followupCode }: {
+  onSend: (f: { rating: number; wouldTry: boolean; comment?: string }) => void; onRestart: () => void; followupCode: string;
 }) {
   const [rating, setRating] = useState(0);
   const [wouldTry, setWouldTry] = useState<boolean>();
@@ -280,7 +280,10 @@ export function FeedbackScreen({ onSend, onRestart }: {
         description={sent ? "Your answers help us make the ideas more useful." : "Your honest answer helps us test mend."}
       />
       {sent ? (
-        <ThanksState label="FEEDBACK RECEIVED" text="Here's to making more with what you have." onBack={onRestart} backLabel="Start again" />
+        <>
+          <FollowupLink code={followupCode} />
+          <ThanksState label="FEEDBACK RECEIVED" text="Here's to making more with what you have." onBack={onRestart} backLabel="Start again" />
+        </>
       ) : (
         <>
           <fieldset className="stars">
@@ -315,6 +318,23 @@ export function FeedbackScreen({ onSend, onRestart }: {
           </Footer>
         </>
       )}
+    </div>
+  );
+}
+
+// Shown after feedback: the short link for the one-week "Did you make it?" check.
+function FollowupLink({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  // Only rendered after the feedback is sent, so the window is always there.
+  const [origin] = useState(() => window.location.origin.replace(/^https?:\/\//, ""));
+  const link = `${origin}/f/${code}`;
+  return (
+    <div className="followup-link">
+      <span className="tiny-label">ONE WEEK FROM NOW</span>
+      <p>We&apos;d love to hear if you made something. Keep this link, or we&apos;ll send it to you:</p>
+      <button type="button" onClick={() => navigator.clipboard?.writeText(`https://${link}`).then(() => setCopied(true), () => {})}>
+        <code>{link}</code><span>{copied ? "Copied" : "Copy"}</span>
+      </button>
     </div>
   );
 }
