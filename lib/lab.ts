@@ -1,7 +1,8 @@
 // Lab mode helpers (server only): passcode check, CSV export and the summary numbers.
 import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import type { StoredEvent } from "./store";
+import { sideStats, winner, type LabRating, type LabRun } from "./compare";
+import { listRows, type StoredEvent } from "./store";
 
 export const LAB_COOKIE = "mend_lab";
 const hash = (s: string) => createHash("sha256").update(`mend-lab:${s}`).digest();
@@ -69,4 +70,49 @@ export function summarise(events: StoredEvent[]) {
     makeCount: choices.filter((e) => e.choice === "make").length,
     getMadeCount: choices.filter((e) => e.choice === "get_it_made").length,
   };
+}
+
+// ---------- Blind comparisons ----------
+
+export async function loadComparisons() {
+  const [runs, ratings] = await Promise.all([listRows("lab_runs"), listRows("lab_ratings")]);
+  const byRun = new Map<string, LabRating[]>();
+  for (const r of ratings as LabRating[]) byRun.set(r.run_id, [...(byRun.get(r.run_id) ?? []), r]);
+  const all = (runs as LabRun[]).map((run) => ({ run, ratings: byRun.get(run.id) ?? [] }));
+  const pairs = all.flatMap(({ run, ratings }) => ratings.map((rating) => ({ run, rating })));
+  return { all, pairs, mend: sideStats(pairs, "mend"), chatbot: sideStats(pairs, "chatbot") };
+}
+
+export const RATING_COLUMNS = ["rated_at", "run_id", "run_at", "garment", "fabric", "tools", "skill", "rater", "set", "is_mend", "mend_source", "idea_index", "idea_title", "feasibility", "creativity", "fabric_suitability", "unsafe", "set_comment", "run_winner"] as const;
+
+// One row per rated idea, with the true mapping, for analysis in a spreadsheet.
+export function ratingsCsv(pairs: { run: LabRun; rating: LabRating }[]) {
+  const rows = pairs.flatMap(({ run, rating }) =>
+    rating.ratings.map((r) => {
+      const idea = (r.set === 1 ? run.set1 : run.set2)[r.index];
+      const row: Record<(typeof RATING_COLUMNS)[number], string> = {
+        rated_at: rating.created_at,
+        run_id: run.id,
+        run_at: run.created_at,
+        garment: run.garment,
+        fabric: run.input.parts.map((p) => `${p.percent}% ${p.fibre}`).join(", "),
+        tools: run.input.tools.join("; "),
+        skill: run.skill,
+        rater: rating.rater ?? "",
+        set: String(r.set),
+        is_mend: r.set === run.mend_set ? "yes" : "no",
+        mend_source: run.mend_source,
+        idea_index: String(r.index + 1),
+        idea_title: idea?.title ?? "",
+        feasibility: String(r.feasibility),
+        creativity: String(r.creativity),
+        fabric_suitability: String(r.fabric),
+        unsafe: r.unsafe ? "yes" : "no",
+        set_comment: (r.set === 1 ? rating.comments.set1 : rating.comments.set2) ?? "",
+        run_winner: winner(run, rating),
+      };
+      return RATING_COLUMNS.map((k) => cell(row[k])).join(",");
+    }),
+  );
+  return [RATING_COLUMNS.join(","), ...rows].join("\r\n") + "\r\n";
 }

@@ -70,3 +70,17 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - Node 22+ in the README (AI SDK is not used, but Node 20 is deprecated on Vercel).
 - Supabase project "mend" created on 29 October 2026 in carolina-kp's Org (free tier, $0/month, eu-central-1 Frankfurt, close to Copenhagen). Migration `001_events` applied. The security advisor's "RLS enabled, no policy" notice is intended: only the server key can read or write.
 - `lib/store.ts` accepts both legacy JWT service_role keys and the newer `sb_secret_` keys (sent only in the `apikey` header).
+
+# Second pass (November 2026)
+
+## Storage
+- `lib/store.ts` is now table-agnostic (`insertRow`, `upsertRow`, `listRows`, `getRow`), with the same Supabase or local JSONL behaviour for every table.
+- `supabase/migrations/002_second_pass.sql` adds `lab_runs`, `lab_ratings`, `quotes`, `quote_contacts` and `trials`, and allows `followup` events. Row level security on every table, no policies.
+
+## Lab blind A/B (H1)
+- "A" is the full mend. pipeline (same as the app, including the fallback if Gemini is down; the run records which). "B" is the same Gemini model and temperature with a plain prompt: "Suggest three upcycling ideas for this garment" plus the garment, fibre mix, tools and skill, the facts a person would type into a free chatbot. No fabric rules, no constraints.
+- Both sets are shown in one neutral shape (title, description, materials, steps, tips) so the format gives nothing away. mend.'s "why it suits the fabric" and warnings become its tips, and the chatbot is asked for tips too.
+- The server flips a coin for Set 1 or Set 2 and returns only the run id; the mapping never reaches the rating page. The main lab page shows the mapping to Carolina and Poppy.
+- Ratings per idea: feasible, creative, suits the fabric (1 to 5) and an "unsafe or damaging" box, plus a comment per set and a rater label (not a full name).
+- H1 metric on the lab page: share of ideas rated feasible (4 or 5) for mend. minus the chatbot's, against the 20 point target from the proposal. Also average score, unsafe counts, and a winner per rated run (higher average of all three scores).
+- "Export blind ratings CSV" gives one row per rated idea with the true mapping.
