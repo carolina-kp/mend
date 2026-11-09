@@ -105,3 +105,9 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - Static seed data in `lib/mockMenders.ts` (invented people: Ida, Malik, Sofie; four community posts). Prices are labelled placeholders. No accounts, following, posting or messaging; "Ask for a quote" on a profile is disabled with a note that the prototype matches jobs by hand.
 - Past projects are shown as fabric-coloured swatch tiles rather than photos, so there is no stock imagery to license and nothing looks like a real person's work.
 - Links in: a small line under the landing disclaimer, and "See Ida's profile" on the demo quote card. Both open in a new tab so the main flow is not lost.
+
+## Loading screen and model speed (9 November 2026)
+- Problem: the loading screen often ended in the "AI is busy" standard set. On 9 November gemini-3.5-flash took 13 to 64 seconds per request (with a rule-check retry), so the 8 second timeout from the brief cut it off.
+- Benchmarked four test garments: gemini-3.5-flash with minimal thinking took 13 to 40 s (one fell back); gemini-3.5-flash-lite took 3 to 7 s, all four real AI answers, equally specific. Both are free tier. Default model is now `gemini-3.5-flash-lite` with `minimal` thinking (`GEMINI_THINKING` to change).
+- Timeout raised to 12 s per attempt (deviation from the brief's 8 s): Flash-Lite answers well inside it, and two attempts stay under the browser's own 30 s limit, after which the browser shows the standard set itself. The app still never shows an error.
+- Loading screen: one message every 2.2 s, a bar that fills slowly towards 90% and completes when ideas arrive (no fast looping bar), a plain "The free AI is slow right now. Still on it" after 14 s, a minimum of 2.4 s on screen so cached answers do not flash past, and "Your three ideas are ready" for 0.7 s before the results.

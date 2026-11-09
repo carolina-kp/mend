@@ -15,6 +15,8 @@ import { GarmentScreen, PhotoScreen, SkillScreen, ToolsScreen } from "./screens/
 import { Icon } from "./ui";
 
 const num = (i: number) => String(i + 1).padStart(2, "0");
+const MIN_LOADING_MS = 2400; // the loading screen never flashes by, even when ideas come from the cache
+const READY_MS = 700; // "Your three ideas are ready" before the results slide in
 
 // Shown when someone jumps past the questions from the presentation navigator.
 const PREVIEW = SAMPLE_GARMENTS[1];
@@ -32,6 +34,7 @@ export function Studio() {
   const [opened, setOpened] = useState(false); // did they look at an idea before rating?
   const [sample, setSample] = useState<SampleGarment["id"]>();
   const [attempt, setAttempt] = useState(0);
+  const [ready, setReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const set = (patch: Partial<Answers>) => setA((prev) => ({ ...prev, ...patch }));
@@ -54,6 +57,7 @@ export function Studio() {
   }
   function findIdeas() {
     setResult(undefined);
+    setReady(false);
     setChosen(0);
     setOpened(false);
     setAttempt((n) => n + 1);
@@ -100,13 +104,22 @@ export function Studio() {
       return () => clearTimeout(t);
     }
     let cancelled = false;
+    const started = Date.now();
+    const timers: ReturnType<typeof setTimeout>[] = [];
     getIdeas({ garment: a.garment!, parts: a.parts.filter((p) => p.percent > 0), tools: a.tools, skill: a.skill!, garmentImage: a.garmentImage }).then((r) => {
       if (cancelled) return;
-      setResult(r);
-      go("results");
+      // Never flash past: stay at least MIN_LOADING_MS, then show "ready" briefly before the ideas.
+      timers.push(
+        setTimeout(() => {
+          setResult(r);
+          setReady(true);
+          timers.push(setTimeout(() => go("results"), READY_MS));
+        }, Math.max(0, MIN_LOADING_MS - (Date.now() - started))),
+      );
     });
     return () => {
       cancelled = true;
+      timers.forEach(clearTimeout);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per attempt
   }, [screen, attempt]);
@@ -121,7 +134,7 @@ export function Studio() {
     fabric: <FabricMixScreen {...props} fromLabel={fromLabel} next={() => go("tools")} />,
     tools: <ToolsScreen {...props} next={() => go("skill")} />,
     skill: <SkillScreen {...props} next={findIdeas} />,
-    loading: <LoadingScreen />,
+    loading: <LoadingScreen key={attempt} ready={ready} />,
     results: <ResultsScreen a={shownAnswers} result={shown} onOpen={(i) => (setChosen(i), setOpened(true), go("detail"))} onFeedback={() => go("feedback")} />,
     detail: (
       <DetailScreen idea={idea} index={chosen}

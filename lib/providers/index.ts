@@ -11,7 +11,7 @@ const PROVIDERS = { gemini, ollama }; // FUTURE: add more providers here
 
 export function provider() {
   const name = (process.env.LLM_PROVIDER || "gemini") as keyof typeof PROVIDERS;
-  const model = process.env.LLM_MODEL || "gemini-3.5-flash";
+  const model = process.env.LLM_MODEL || "gemini-3.5-flash-lite";
   if (!PROVIDERS[name]) throw new Error(`Unknown LLM_PROVIDER "${name}"`);
   return { complete: PROVIDERS[name].complete, model };
 }

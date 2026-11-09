@@ -5,8 +5,8 @@ import type { IdeasInput, IdeasResponse, LabelResult } from "./schema";
 
 const BUSY_NOTE = "Showing a standard idea set because the AI is busy.";
 
-async function post<T>(url: string, body: unknown): Promise<T> {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+async function post<T>(url: string, body: unknown, timeoutMs = 30_000): Promise<T> {
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs) });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
   return data as T;
@@ -15,7 +15,7 @@ async function post<T>(url: string, body: unknown): Promise<T> {
 export const readLabel = (labelImage: string) => post<LabelResult>("/api/suggest", { mode: "label", labelImage });
 
 // The server always answers with three ideas. If even the server cannot be reached
-// (no signal in the classroom), the same rule-based bank runs here in the browser.
+// (no signal in the classroom) or takes over 30 s, the same rule-based bank runs here in the browser.
 export async function getIdeas(input: IdeasInput): Promise<IdeasResponse> {
   try {
     return await post<IdeasResponse>("/api/ideas", input);

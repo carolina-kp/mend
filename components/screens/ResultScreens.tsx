@@ -18,26 +18,41 @@ const mixLabel = (a: Answers) =>
 const ideaNumber = (i: number) => String(i + 1).padStart(2, "0");
 
 const MESSAGES = ["Reading your fibre mix", "Checking what your fabric can take", "Matching ideas to your tools", "Picking one quick, one medium, one stretch"];
+const STEP_MS = 2200; // one message every 2.2 s, so each can be read
+const SLOW_MS = 14_000; // after this, say plainly that the free AI is slow
 
-export function LoadingScreen() {
-  const [step, setStep] = useState(0);
+// The bar fills slowly towards 90% over the usual wait, then jumps to 100% when the ideas arrive.
+export function LoadingScreen({ ready = false }: { ready?: boolean }) {
+  const [elapsed, setElapsed] = useState(0);
+  const [filling, setFilling] = useState(false);
   useEffect(() => {
-    const t = setInterval(() => setStep((s) => Math.min(s + 1, MESSAGES.length - 1)), 1600);
-    return () => clearInterval(t);
+    const start = Date.now();
+    const kick = setTimeout(() => setFilling(true), 50); // start the slow fill just after the first paint
+    const t = setInterval(() => setElapsed(Date.now() - start), 500);
+    return () => {
+      clearTimeout(kick);
+      clearInterval(t);
+    };
   }, []);
+  const message = ready
+    ? "Your three ideas are ready"
+    : elapsed >= SLOW_MS
+      ? "The free AI is slow right now. Still on it"
+      : MESSAGES[Math.min(Math.floor(elapsed / STEP_MS), MESSAGES.length - 1)];
+
   return (
     <div className="screen-content loading-screen">
       <div className="loading-art">
         <div className="loading-orbit orbit-one" />
         <div className="loading-orbit orbit-two" />
-        <div className="loading-center"><Icon name="scissors" size={45} /></div>
+        <div className="loading-center"><Icon name={ready ? "check" : "scissors"} size={45} /></div>
       </div>
       <div className="eyebrow">A LITTLE PATIENCE, A LOT OF POSSIBILITY</div>
-      <h1>Finding ideas for your fabric<span>…</span></h1>
+      <h1>{ready ? <>Here they come<span>.</span></> : <>Finding ideas for your fabric<span>…</span></>}</h1>
       <p>Fabric rules first, then ideas that fit your tools and skill.</p>
       <div className="loading-bottom" role="status" aria-live="polite">
-        <span className="loading-line"><i /></span>
-        <span>{MESSAGES[step].toUpperCase()}</span>
+        <span className="loading-line"><i className={ready ? "done" : filling ? "filling" : ""} /></span>
+        <span key={message} className="loading-message">{message.toUpperCase()}</span>
       </div>
     </div>
   );

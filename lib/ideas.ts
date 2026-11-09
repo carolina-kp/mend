@@ -1,5 +1,5 @@
 // The ideas pipeline (server only):
-// 1. rules -> constraints  2. prompt  3. Gemini (JSON, low temperature, 8s timeout)
+// 1. rules -> constraints  2. prompt  3. Gemini (JSON, low temperature, 12 s timeout)
 // 4. Zod schema check + rule check, retry once with the broken rules listed
 // 5. anything still missing is filled from the rule-based bank. Never throws.
 import { z } from "zod";
@@ -10,7 +10,8 @@ import { parseJson, provider } from "./providers";
 import { ModelTimeoutError, RateLimitError } from "./providers/types";
 import { IdeasResult, type Idea, type IdeasInput, type IdeasResponse } from "./schema";
 
-const TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS) || 8_000;
+// 12 s per attempt: Flash-Lite usually answers in 3 to 7 s; two attempts stay under the browser's 30 s limit.
+const TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS) || 12_000;
 const CACHE_MS = 10 * 60_000; // identical requests reuse the answer for 10 minutes (free-tier limits)
 export const BUSY_NOTE = "Showing a standard idea set because the AI is busy.";
 

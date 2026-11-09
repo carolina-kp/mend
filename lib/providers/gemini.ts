@@ -16,7 +16,7 @@ export const complete: Complete = async ({ system, user, image, jsonSchema, temp
         responseMimeType: "application/json",
         ...(jsonSchema ? { responseJsonSchema: jsonSchema } : {}),
         temperature,
-        thinkingConfig: { thinkingLevel: "low" },
+        thinkingConfig: { thinkingLevel: process.env.GEMINI_THINKING || "minimal" },
       },
     }),
     signal: AbortSignal.timeout(timeoutMs), // never leave a tester staring at the spinner

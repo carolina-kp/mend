@@ -38,9 +38,10 @@ npm test
 | Variable | What it does |
 |---|---|
 | `GEMINI_API_KEY` | Free key from https://aistudio.google.com/apikey. Server only. |
-| `LLM_MODEL` | Model name, default `gemini-3.5-flash` |
+| `LLM_MODEL` | Model name, default `gemini-3.5-flash-lite` (answers in 3 to 7 s) |
 | `LLM_PROVIDER` | `gemini` (default) or `ollama` for local development |
-| `GEMINI_TIMEOUT_MS` | How long to wait for Gemini before showing the standard idea set (default 8000) |
+| `GEMINI_TIMEOUT_MS` | How long to wait for each Gemini attempt before showing the standard idea set (default 12000) |
+| `GEMINI_THINKING` | Gemini thinking level, default `minimal` (fastest) |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Where feedback is stored. Empty: `data/events.jsonl` on your computer |
 | `LAB_PASSCODE` | Shared passcode for `/lab`. Empty: lab is off |
 | `OLLAMA_BASE_URL` | Only for Ollama, default `http://localhost:11434` |
@@ -49,7 +50,7 @@ npm test
 
 ## If the AI is down
 
-The app never shows an error page. If Gemini is slow (8 seconds), busy, has a bad key or keeps breaking the fabric rules, `/api/ideas` answers from the rule-based idea bank (`lib/fallbackIdeas.ts`) with the note "Showing a standard idea set because the AI is busy." If the phone cannot reach the server at all, the same bank runs in the browser.
+The app never shows an error page. If Gemini is slow (12 seconds per attempt), busy, has a bad key or keeps breaking the fabric rules, `/api/ideas` answers from the rule-based idea bank (`lib/fallbackIdeas.ts`) with the note "Showing a standard idea set because the AI is busy." If the phone cannot reach the server at all, the same bank runs in the browser.
 
 ## Teacher demo
 
