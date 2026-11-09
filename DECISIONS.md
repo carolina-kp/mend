@@ -111,3 +111,11 @@ Choices made while building the prototype from `mend-prototype-brief.md`. Newest
 - Benchmarked four test garments: gemini-3.5-flash with minimal thinking took 13 to 40 s (one fell back); gemini-3.5-flash-lite took 3 to 7 s, all four real AI answers, equally specific. Both are free tier. Default model is now `gemini-3.5-flash-lite` with `minimal` thinking (`GEMINI_THINKING` to change).
 - Timeout raised to 12 s per attempt (deviation from the brief's 8 s): Flash-Lite answers well inside it, and two attempts stay under the browser's own 30 s limit, after which the browser shows the standard set itself. The app still never shows an error.
 - Loading screen: one message every 2.2 s, a bar that fills slowly towards 90% and completes when ideas arrive (no fast looping bar), a plain "The free AI is slow right now. Still on it" after 14 s, a minimum of 2.4 s on screen so cached answers do not flash past, and "Your three ideas are ready" for 0.7 s before the results.
+
+## Privacy page (9 November 2026)
+- `/privacy` in plain English: purpose, exactly what is stored (matches `lib/events.ts`, `lib/quote.ts` and the migrations), what is not (photos, names, unrequested emails), who else handles data (Google Gemini free tier, Supabase in Frankfurt, Vercel), retention and GDPR rights.
+- Retention: everything deleted by 31 January 2027, after the course; a quote email earlier, once that quote is answered. Carolina and Poppy should actually do this.
+- Deletion requests are matched by the follow-up code or the date and garment, since we never know who a tester is.
+- The Gemini free tier may use inputs to improve Google's services; the page says so, which backs up the "no faces in photos" line.
+- Contact: `PRIVACY_CONTACT_EMAIL` if set, otherwise "ask Carolina or Poppy in person or through the course". No personal email is published without Carolina choosing to.
+- Linked from the landing disclaimer, both photo steps, the quote email field, the feedback comment, the follow-up page and the laptop footer. In-app links open in a new tab so answers held in memory are not lost.

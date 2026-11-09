@@ -1,5 +1,6 @@
 "use client";
 // Step 3: fabric. Either photograph the care label (AI reads the %s) or enter fibres by hand.
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { readLabel } from "@/lib/api";
 import { buildConstraints } from "@/lib/buildConstraints";
@@ -60,7 +61,7 @@ export function FabricChoiceScreen({ set, next, onManual }: Props & { onManual: 
       {status === "error" && <p className="inline-note">{error}</p>}
       <div className="privacy-note">
         <span className="privacy-symbol">i</span>
-        <p>Your photo is read once to find the fabric label and is not saved.</p>
+        <p>Your photo is read once to find the fabric label and is not saved. <Link href="/privacy" target="_blank" className="privacy-link">Privacy</Link></p>
       </div>
       <p className="choice-footnote">Not sure? Make your best guess. You can always change it later.</p>
     </div>

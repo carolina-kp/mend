@@ -1,5 +1,6 @@
 "use client";
 // "Did you make it?" One week after testing. Three questions, no login.
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Footer, Icon, PrimaryButton, SectionHeading, ThanksState } from "@/components/ui";
@@ -60,6 +61,7 @@ export function FollowupForm({ sessionId, garment, ideas }: { sessionId: string;
       <label className="comment-label" htmlFor="story">WHAT HAPPENED? <span>OPTIONAL</span></label>
       <textarea className="comment-box" id="story" rows={4} maxLength={1000} value={story} onChange={(e) => setStory(e.target.value)}
         placeholder={made === false ? "What got in the way?" : "How did it go?"} />
+      <p className="field-hint">Anonymous, no login. <Link href="/privacy" className="privacy-link">Privacy</Link></p>
       {error && <p className="inline-note" role="alert">{error}</p>}
       <Footer>
         <PrimaryButton disabled={made === undefined || state === "sending"} onClick={send}>{state === "sending" ? "Sending…" : "Send"}</PrimaryButton>

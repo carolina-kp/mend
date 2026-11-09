@@ -1,6 +1,7 @@
 "use client";
 // After the steps: loading, the three ideas, one idea in detail, make it myself,
 // get it made (the ready brief), and feedback.
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { GARMENTS, SKILLS } from "@/lib/config";
 import { fibreLabel } from "@/lib/fabricRules";
@@ -266,7 +267,7 @@ export function MadeScreen({ a, idea, onRequest, onFeedback }: {
         <input id="date" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} />
         <label htmlFor="email">EMAIL FOR THE QUOTE <span>OPTIONAL</span></label>
         <input id="email" type="email" autoComplete="email" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" aria-describedby="email-note" />
-        <p id="email-note" className="field-note">Only used to reply with a quote. Kept apart from your brief.</p>
+        <p id="email-note" className="field-note">Only used to reply with a quote. Kept apart from your brief. <Link href="/privacy" target="_blank" className="privacy-link">Privacy</Link></p>
         {/* Honeypot for bots: hidden from people and screen readers. */}
         <div className="honeypot" aria-hidden="true">
           <label htmlFor="website">Website</label>
@@ -320,6 +321,7 @@ export function FeedbackScreen({ onSend, onRestart, followupCode }: {
             ))}
           </div>
           <label className="comment-label" htmlFor="comment">ANYTHING ELSE? <span>OPTIONAL</span></label>
+          <p className="field-hint">Anonymous: no name or email. <Link href="/privacy" target="_blank" className="privacy-link">How we use it</Link></p>
           <textarea className="comment-box" id="comment" rows={3} maxLength={1000} placeholder="Tell us what you'd change" value={comment} onChange={(e) => setComment(e.target.value)} />
           <Footer>
             <PrimaryButton

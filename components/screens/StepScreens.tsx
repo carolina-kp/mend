@@ -1,5 +1,6 @@
 "use client";
 // Steps 1, 2, 4, 5: garment, photo, tools, skill.
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { GARMENTS, SKILLS, TOOLS, type ToolId } from "@/lib/config";
 import { SAMPLE_GARMENTS, type SampleGarment } from "@/lib/sampleGarments";
@@ -57,7 +58,7 @@ export function GarmentScreen({ a, set, next, onSample }: StepProps & { onSample
         ))}
       </div>
       <Footer><PrimaryButton disabled={!a.garment} onClick={next}>Continue</PrimaryButton></Footer>
-      <p className="disclaimer">A student prototype. Ideas are AI suggestions, so test on a scrap first.</p>
+      <p className="disclaimer">A student prototype. Ideas are AI suggestions, so test on a scrap first. <Link href="/privacy" target="_blank" className="privacy-link">Privacy</Link></p>
       <a className="concept-link" href="/mock/menders" target="_blank" rel="noopener">Coming later: menders and community (concept mock-up)</a>
     </div>
   );
@@ -104,7 +105,7 @@ export function PhotoScreen({ a, set, next }: StepProps) {
       {error && <p className="inline-note">{error}</p>}
       <div className="privacy-note">
         <span className="privacy-symbol">i</span>
-        <p>Optional. Your photo is sent once to the AI with your answers and is not saved. Don&apos;t include faces.</p>
+        <p>Optional. Your photo is sent once to the AI with your answers and is not saved. Don&apos;t include faces. <Link href="/privacy" target="_blank" className="privacy-link">Privacy</Link></p>
       </div>
       <Footer><PrimaryButton onClick={next}>{a.garmentImage ? "Continue" : "Skip the photo"}</PrimaryButton></Footer>
     </div>

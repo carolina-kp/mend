@@ -2,6 +2,7 @@
 // The whole thing: on a laptop it's the presentation website (intro, live phone,
 // screen navigator, component sheet); on a phone CSS hides everything but the app.
 // Answers live in memory only. Feedback and choices are sent to /api/feedback.
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
 import { getIdeas, requestQuote, sendEvent, sessionId } from "@/lib/api";
@@ -229,7 +230,7 @@ export function Studio() {
 
       <section className="desktop-sheet"><ComponentSheet /></section>
       <footer className="workspace-footer">
-        <span>{APP_NAME.toUpperCase()}. / A BETTER KIND OF MAKE</span><span>FABRIC FIRST. ALWAYS.</span><span>© 2025 {APP_NAME.toUpperCase()} STUDIO</span>
+        <span>{APP_NAME.toUpperCase()}. / A BETTER KIND OF MAKE · <Link href="/privacy" className="privacy-link">PRIVACY</Link></span><span>FABRIC FIRST. ALWAYS.</span><span>© 2025 {APP_NAME.toUpperCase()} STUDIO</span>
       </footer>
     </div>
   );

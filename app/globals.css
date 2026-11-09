@@ -508,3 +508,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .feed-copy h3 { font: 500 22px var(--serif); letter-spacing: -.03em; margin: 6px 0; }
 .feed-copy p { font-size: 13px; line-height: 1.5; margin: 0 0 6px; }
 .concept-link { display: block; text-align: center; margin-top: 8px; font-size: 11px; color: var(--accent); }
+
+/* Privacy and other plain documents */
+.doc .app-logo { text-decoration: none; color: var(--ink); }
+.doc h2 { font-size: 22px; margin: 28px 0 6px; }
+.doc ul { list-style: disc; padding-left: 18px; font-size: 13px; line-height: 1.6; color: #5b6159; }
+.doc li { margin-bottom: 6px; }
+.doc a { color: var(--accent); }
+.doc-updated { margin-top: 30px; font-size: 11px !important; color: var(--muted) !important; }
+.privacy-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.field-hint { margin: -4px 0 10px; font-size: 11px; color: var(--muted); }
